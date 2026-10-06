@@ -10,7 +10,7 @@ const SAVE_LABELS: Readonly<Record<SaveStatus, string>> = {
 
 /** Même fichier que le favicon, pour que le logo n'ait qu'une seule source. */
 function Logo() {
-  return <img src="/favicon.svg" alt="" className="size-4.5 shrink-0" aria-hidden />;
+  return <img src="/favicon.svg" alt="" className="size-7 shrink-0" aria-hidden />;
 }
 
 export function ProjectBrand() {
