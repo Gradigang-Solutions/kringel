@@ -1,4 +1,4 @@
-export const PROJECT_SCHEMA_VERSION = 1;
+export const PROJECT_SCHEMA_VERSION = 2;
 
 export const STEPS_PER_CYCLE = 16;
 export const STEPS_PER_BEAT = 4;
@@ -8,14 +8,33 @@ export const MAX_CLIP_STEPS = STEPS_PER_CYCLE * Math.max(...CLIP_CYCLE_OPTIONS);
 
 export const BPM_RANGE = { min: 40, max: 240, default: 120 } as const;
 
-export const TRACK_PRESETS = [
-  { name: "Drums", color: "oklch(0.78 0.14 65)", defaultClipKind: "steps" },
-  { name: "Bass", color: "oklch(0.78 0.14 150)", defaultClipKind: "notes" },
-  { name: "Lead", color: "oklch(0.78 0.14 240)", defaultClipKind: "notes" },
-  { name: "Pad", color: "oklch(0.78 0.14 320)", defaultClipKind: "notes" },
+/** Palette des pistes : les quatre premières couleurs sont celles des pistes d'un nouveau projet. */
+export const TRACK_COLORS = [
+  "oklch(0.78 0.14 65)",
+  "oklch(0.78 0.14 150)",
+  "oklch(0.78 0.14 240)",
+  "oklch(0.78 0.14 320)",
+  "oklch(0.78 0.14 25)",
+  "oklch(0.78 0.14 195)",
+  "oklch(0.78 0.14 105)",
+  "oklch(0.78 0.14 280)",
 ] as const;
 
+export const TRACK_PRESETS = [
+  { name: "Drums", color: TRACK_COLORS[0], defaultClipKind: "steps" },
+  { name: "Bass", color: TRACK_COLORS[1], defaultClipKind: "notes" },
+  { name: "Lead", color: TRACK_COLORS[2], defaultClipKind: "notes" },
+  { name: "Pad", color: TRACK_COLORS[3], defaultClipKind: "notes" },
+] as const;
+
+/** Nom de base d'une piste ajoutée, selon le type de clip qu'elle crée par défaut. */
+export const NEW_TRACK_NAMES = { steps: "Drums", notes: "Synth", code: "Code" } as const;
+
+export const TRACK_COUNT_RANGE = { min: 1, max: TRACK_COLORS.length } as const;
+
 export const SCENE_NAMES = ["Intro", "Groove", "Lift", "Break", "Drop", "Outro"] as const;
+export const NEW_SCENE_NAME = "Scene";
+export const SCENE_COUNT_RANGE = { min: 1, max: 12 } as const;
 
 export const MIXER_DEFAULTS = {
   gain: 1,

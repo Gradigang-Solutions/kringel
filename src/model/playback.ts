@@ -163,18 +163,19 @@ export function isSceneActive(state: PlaybackState, project: Project, sceneIndex
   );
 }
 
-/** Retire de l'état de lecture les clips absents du projet (après une annulation, par exemple). */
+/**
+ * Retire de l'état de lecture les clips et les pistes absents du projet (après une annulation ou
+ * la suppression d'une piste, par exemple).
+ */
 export function forgetMissingClips(state: PlaybackState, project: Project): PlaybackState {
   const existing = new Set(clipIds(project));
-  const isKnown = (clipId: string | null) => clipId === null || existing.has(clipId);
+  const trackIds = new Set(project.tracks.map((track) => track.id));
+  const isKnown = ([trackId, clipId]: [string, string | null]) =>
+    trackIds.has(trackId) && (clipId === null || existing.has(clipId));
   return {
     ...state,
-    playingClipIds: Object.fromEntries(
-      Object.entries(state.playingClipIds).filter(([, clipId]) => isKnown(clipId)),
-    ),
-    queuedClipIds: Object.fromEntries(
-      Object.entries(state.queuedClipIds).filter(([, clipId]) => isKnown(clipId)),
-    ),
+    playingClipIds: Object.fromEntries(Object.entries(state.playingClipIds).filter(isKnown)),
+    queuedClipIds: Object.fromEntries(Object.entries(state.queuedClipIds).filter(isKnown)),
     codeChecks: Object.fromEntries(
       Object.entries(state.codeChecks).filter(([clipId]) => existing.has(clipId)),
     ),

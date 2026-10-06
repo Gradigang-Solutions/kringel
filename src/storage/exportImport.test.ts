@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseProjectFile, projectFileName, serializeProject } from "@/storage/exportImport";
 import {
+  asVersion1,
   makeCodeClip,
   makeNote,
   makeNotesClip,
@@ -30,6 +31,15 @@ describe("export puis import", () => {
   it("nomme le fichier d'après le projet", () => {
     expect(projectFileName(project)).toBe("night-drive.kringel.json");
     expect(projectFileName(makeProject({ name: "!!!" }))).toBe("project.kringel.json");
+  });
+
+  it("ouvre un fichier exporté par une version précédente", () => {
+    const file = JSON.stringify({
+      format: "kringel-project",
+      version: 1,
+      project: asVersion1(project),
+    });
+    expect(parseProjectFile(file)).toEqual({ isOk: true, project });
   });
 });
 

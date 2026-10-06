@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from "dexie";
-import { PROJECT_SCHEMA_VERSION } from "@/model/constants";
+import { z } from "zod";
 import type { Project } from "@/model/types";
-import { projectSchema } from "@/storage/schema";
+import { parseVersionedProject } from "@/storage/migrate";
 
 interface StoredProject {
   readonly id: string;
@@ -15,6 +15,9 @@ interface Setting {
 }
 
 const LAST_PROJECT_KEY = "lastProjectId";
+
+/** Un projet enregistré porte sa version : elle choisit la migration à appliquer. */
+const storedVersionSchema = z.object({ version: z.number().int() });
 
 class KringelDatabase extends Dexie {
   projects!: EntityTable<StoredProject, "id">;
@@ -40,7 +43,7 @@ export async function loadLastProject(): Promise<Project | null> {
   const setting = await db.settings.get(LAST_PROJECT_KEY);
   if (!setting) return null;
   const stored = await db.projects.get(setting.value);
-  const parsed = projectSchema.safeParse(stored?.data);
-  if (!parsed.success || parsed.data.version !== PROJECT_SCHEMA_VERSION) return null;
-  return parsed.data;
+  const versioned = storedVersionSchema.safeParse(stored?.data);
+  if (!versioned.success) return null;
+  return parseVersionedProject(versioned.data.version, stored?.data);
 }

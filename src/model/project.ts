@@ -29,6 +29,7 @@ export function createProject(nextId: IdGenerator, name = UNTITLED_PROJECT_NAME)
       id: nextId(),
       name: preset.name,
       color: preset.color,
+      defaultClipKind: preset.defaultClipKind,
       mixer: MIXER_DEFAULTS,
       clips: SCENE_NAMES.map(() => null),
     })),

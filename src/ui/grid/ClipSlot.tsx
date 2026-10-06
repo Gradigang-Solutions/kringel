@@ -1,4 +1,3 @@
-import { TRACK_PRESETS } from "@/model/constants";
 import type { ClipKind, SlotAddress } from "@/model/types";
 import {
   createClip,
@@ -28,16 +27,13 @@ const KIND_MENU_LABELS: Readonly<Record<ClipKind, string>> = {
 
 export interface ClipSlotProps {
   readonly address: SlotAddress;
-  readonly trackIndex: number;
+  /** Type du clip créé d'un clic : celui de la piste. */
+  readonly defaultKind: ClipKind;
   readonly isCompact: boolean;
   readonly isInvite: boolean;
 }
 
-function defaultKind(trackIndex: number): ClipKind {
-  return TRACK_PRESETS[trackIndex]?.defaultClipKind ?? "notes";
-}
-
-export function ClipSlot({ address, trackIndex, isCompact, isInvite }: ClipSlotProps) {
+export function ClipSlot({ address, defaultKind, isCompact, isInvite }: ClipSlotProps) {
   const clip = useProjectStore(
     (state) =>
       state.project.tracks.find((track) => track.id === address.trackId)?.clips[
@@ -62,7 +58,7 @@ export function ClipSlot({ address, trackIndex, isCompact, isInvite }: ClipSlotP
           isInvite={isInvite}
           isCompact={isCompact}
           label="Create clip"
-          onCreate={() => createClip(address, defaultKind(trackIndex))}
+          onCreate={() => createClip(address, defaultKind)}
         />
       </ContextMenuArea>
     );

@@ -120,6 +120,7 @@ export function demoProject(
       id: nextId(),
       name: preset.name,
       color: preset.color,
+      defaultClipKind: preset.defaultClipKind,
       mixer: { ...MIXER_DEFAULTS, ...tracks[index]?.mixer },
       clips: SCENE_NAMES.map((_, sceneIndex) => tracks[index]?.clips[sceneIndex] ?? null),
     })),

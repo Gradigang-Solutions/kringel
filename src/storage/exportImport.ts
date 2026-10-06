@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PROJECT_SCHEMA_VERSION } from "@/model/constants";
 import type { Project } from "@/model/types";
-import { projectSchema } from "@/storage/schema";
+import { isSupportedVersion, parseVersionedProject } from "@/storage/migrate";
 
 const FILE_FORMAT = "kringel-project";
 const JSON_INDENT = 2;
@@ -46,14 +46,15 @@ function parseJson(text: string): unknown {
 export function parseProjectFile(text: string): ImportResult {
   const envelope = envelopeSchema.safeParse(parseJson(text));
   if (!envelope.success) return { isOk: false, error: "This is not a Kringel project." };
-  if (envelope.data.version > PROJECT_SCHEMA_VERSION) {
+  const { version } = envelope.data;
+  if (version > PROJECT_SCHEMA_VERSION) {
     return { isOk: false, error: "This project was made with a newer version of Kringel." };
   }
-  if (envelope.data.version < PROJECT_SCHEMA_VERSION) {
-    return { isOk: false, error: `Unsupported project version ${envelope.data.version}.` };
+  if (!isSupportedVersion(version)) {
+    return { isOk: false, error: `Unsupported project version ${version}.` };
   }
-  const project = projectSchema.safeParse(envelope.data.project);
-  if (!project.success)
+  const project = parseVersionedProject(version, envelope.data.project);
+  if (project === null)
     return { isOk: false, error: "This Kringel project is damaged and can't be opened." };
-  return { isOk: true, project: project.data };
+  return { isOk: true, project };
 }

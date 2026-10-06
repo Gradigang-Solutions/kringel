@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CLIP_CYCLE_OPTIONS, SCALE_MODES, SOUND_SOURCES } from "@/model/constants";
-import type { ClipCycles, Project, ScaleModeId } from "@/model/types";
+import type { ClipCycles, ClipKind, Project, ScaleModeId } from "@/model/types";
 
 const SCALE_MODE_IDS: readonly string[] = SCALE_MODES.map((mode) => mode.id);
 const CYCLE_OPTIONS: readonly number[] = CLIP_CYCLE_OPTIONS;
@@ -53,10 +53,14 @@ const clipSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("code"), id: z.string(), name: z.string(), source: z.string() }),
 ]);
 
+const CLIP_KINDS = ["steps", "notes", "code"] as const satisfies readonly ClipKind[];
+
 const trackSchema = z.object({
   id: z.string(),
   name: z.string(),
   color: z.string(),
+  // Absent des projets v1 : la migration le déduit de la position de la piste.
+  defaultClipKind: z.enum(CLIP_KINDS).default("notes"),
   mixer: z.object({
     gain: z.number(),
     pan: z.number(),

@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority";
-import type { ClipKind } from "@/model/types";
+import type { ClipKind, Track } from "@/model/types";
 import { createClip } from "@/store/actions/clips";
 import { useProjectStore } from "@/store/projectStore";
 import { CodeSnippet } from "@/ui/shared/CodeSnippet";
@@ -12,12 +12,10 @@ interface StartOption {
   readonly subtitle: string;
   readonly code: string;
   readonly kind: ClipKind;
-  readonly trackIndex: number;
+  /** Piste visée dans un nouveau projet ; à défaut, la première piste du bon type. */
+  readonly trackName: string;
   readonly isHighlighted: boolean;
 }
-
-const LEAD_TRACK_INDEX = 2;
-const PAD_TRACK_INDEX = 3;
 
 const START_OPTIONS: readonly StartOption[] = [
   {
@@ -25,7 +23,7 @@ const START_OPTIONS: readonly StartOption[] = [
     subtitle: "Step sequencer",
     code: 's("bd*4")',
     kind: "steps",
-    trackIndex: 0,
+    trackName: "Drums",
     isHighlighted: true,
   },
   {
@@ -33,7 +31,7 @@ const START_OPTIONS: readonly StartOption[] = [
     subtitle: "Piano roll",
     code: 'note("c3 eb3 g3")',
     kind: "notes",
-    trackIndex: LEAD_TRACK_INDEX,
+    trackName: "Lead",
     isHighlighted: false,
   },
   {
@@ -41,13 +39,21 @@ const START_OPTIONS: readonly StartOption[] = [
     subtitle: "Write Strudel yourself",
     code: "// start typing",
     kind: "code",
-    trackIndex: PAD_TRACK_INDEX,
+    trackName: "Pad",
     isHighlighted: false,
   },
 ];
 
+function startTrack(tracks: readonly Track[], option: StartOption): Track | undefined {
+  return (
+    tracks.find((track) => track.name === option.trackName) ??
+    tracks.find((track) => track.defaultClipKind === option.kind) ??
+    tracks[0]
+  );
+}
+
 function StartCard({ option }: { readonly option: StartOption }) {
-  const track = useProjectStore((state) => state.project.tracks[option.trackIndex]);
+  const track = useProjectStore((state) => startTrack(state.project.tracks, option));
   if (!track) return null;
   return (
     <TrackScope color={track.color}>

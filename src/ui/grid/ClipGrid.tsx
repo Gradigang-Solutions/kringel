@@ -11,21 +11,24 @@ export interface ClipGridProps {
   readonly hasEmptyStateOverlay: boolean;
 }
 
-/** Grille de clips : compacte quand un éditeur occupe le bas de l'écran, défilante sur téléphone. */
+/**
+ * Grille de clips : compacte quand un éditeur occupe le bas de l'écran. Elle défile quand les pistes
+ * ou les scènes ne tiennent plus, en laissant au mixer ou à l'éditeur leur hauteur minimale.
+ */
 export function ClipGrid({ hasEmptyStateOverlay }: ClipGridProps) {
-  const sceneCount = useProjectStore((state) => state.project.scenes.length);
+  const scenes = useProjectStore((state) => state.project.scenes);
   const isCompact = useUiStore((state) => state.editorClipId !== null);
   const hasAnyClip = useHasAnyClip();
   return (
     <section
       aria-label="Clip grid"
-      className="flex shrink-0 flex-col gap-1.5 px-3 pt-3 max-md:overflow-x-auto"
+      className="flex shrink-0 flex-col gap-1.5 overflow-x-auto px-3 md:min-h-0 md:shrink md:overflow-y-auto"
     >
       <TrackHeaderRow />
       <div className={cn("relative flex flex-col", isCompact ? "gap-1" : "gap-1.5")}>
-        {Array.from({ length: sceneCount }, (_, sceneIndex) => (
+        {scenes.map((scene, sceneIndex) => (
           <SceneRow
-            key={sceneIndex}
+            key={scene.id}
             sceneIndex={sceneIndex}
             isCompact={isCompact}
             isProjectEmpty={!hasAnyClip}

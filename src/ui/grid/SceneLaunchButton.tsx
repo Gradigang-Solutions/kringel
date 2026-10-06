@@ -1,7 +1,9 @@
 import { Play } from "lucide-react";
+import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export interface SceneLaunchButtonProps {
+/** Les attributs HTML supplémentaires viennent du déclencheur du menu contextuel (Radix asChild). */
+export interface SceneLaunchButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   readonly name: string;
   readonly number: number;
   readonly isActive: boolean;
@@ -17,9 +19,11 @@ export function SceneLaunchButton({
   isDisabled,
   isCompact,
   onLaunch,
+  ...triggerProps
 }: SceneLaunchButtonProps) {
   return (
     <button
+      {...triggerProps}
       type="button"
       aria-label={`Launch scene ${name}`}
       onClick={onLaunch}

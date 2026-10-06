@@ -112,16 +112,25 @@ describe("forgetClip", () => {
 describe("forgetMissingClips", () => {
   it("retire les clips absents du projet et garde les arrêts en attente", () => {
     const project = withClip(makeProject(), 0, 0, makeStepsClip({ id: "kept" }));
+    const drums = trackIdAt(project, 0);
+    const bass = trackIdAt(project, 1);
+    const lead = trackIdAt(project, 2);
+    const pad = trackIdAt(project, 3);
     const state = makePlayback({
-      playingClipIds: { t: "kept", u: "gone" },
-      queuedClipIds: { v: "gone", w: null },
+      playingClipIds: { [drums]: "kept", [bass]: "gone" },
+      queuedClipIds: { [lead]: "gone", [pad]: null },
       codeChecks: { gone: { status: "valid", source: "x" } },
     });
     expect(forgetMissingClips(state, project)).toMatchObject({
-      playingClipIds: { t: "kept" },
-      queuedClipIds: { w: null },
+      playingClipIds: { [drums]: "kept" },
+      queuedClipIds: { [pad]: null },
       codeChecks: {},
     });
+  });
+
+  it("retire les pistes absentes du projet, même pour un arrêt en attente", () => {
+    const state = makePlayback({ queuedClipIds: { "deleted-track": null } });
+    expect(forgetMissingClips(state, makeProject()).queuedClipIds).toEqual({});
   });
 });
 

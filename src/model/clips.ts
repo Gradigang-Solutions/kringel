@@ -127,6 +127,11 @@ function withFreshIds(clip: Clip, nextId: IdGenerator): Clip {
   }
 }
 
+/** Copie indépendante d'un clip : nouveaux identifiants, nom suffixé. */
+export function copyClip(clip: Clip, nextId: IdGenerator): Clip {
+  return { ...withFreshIds(clip, nextId), name: `${clip.name} copy` };
+}
+
 /** Copie le clip dans le premier emplacement libre sous lui, sur la même piste. */
 export function duplicateClip(project: Project, clipId: string, nextId: IdGenerator): Project {
   const located = findClip(project, clipId);
@@ -135,8 +140,11 @@ export function duplicateClip(project: Project, clipId: string, nextId: IdGenera
     (clip, index) => index > located.sceneIndex && clip === null,
   );
   if (targetIndex === -1) return project;
-  const copy = { ...withFreshIds(located.clip, nextId), name: `${located.clip.name} copy` };
-  return setSlot(project, { trackId: located.track.id, sceneIndex: targetIndex }, copy);
+  return setSlot(
+    project,
+    { trackId: located.track.id, sceneIndex: targetIndex },
+    copyClip(located.clip, nextId),
+  );
 }
 
 /** Remplace un clip par un clip de code de même nom, à la même place. */

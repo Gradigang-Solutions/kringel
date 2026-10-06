@@ -115,3 +115,14 @@ export function makeCodeClip(overrides: Partial<CodeClip> = {}): CodeClip {
 export function makePlayback(overrides: Partial<PlaybackState> = {}): PlaybackState {
   return { ...INITIAL_PLAYBACK, ...overrides };
 }
+
+/** Projet tel qu'enregistré en v1 : les pistes n'ont pas encore de type de clip par défaut. */
+export function asVersion1(project: Project): unknown {
+  return {
+    ...project,
+    version: 1,
+    tracks: project.tracks.map((track) =>
+      Object.fromEntries(Object.entries(track).filter(([key]) => key !== "defaultClipKind")),
+    ),
+  };
+}

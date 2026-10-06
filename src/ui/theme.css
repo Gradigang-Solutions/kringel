@@ -108,14 +108,17 @@
 }
 
 /*
- * Grille de session : 4 pistes et la colonne des scènes, partagée par la grille, le mixer et les démos.
- * Sur téléphone, les pistes gardent une largeur lisible et la grille défile horizontalement.
+ * Grille de session : une colonne par piste (`--track-count`, posé depuis le projet) et la colonne
+ * des scènes, partagée par la grille et le mixer. Les pistes gardent une largeur lisible : au-delà,
+ * la grille défile horizontalement.
  */
 @utility grid-session {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) 6rem;
+  grid-template-columns: repeat(var(--track-count), minmax(8.5rem, 1fr)) 6rem;
+  /* Quand la grille défile, chaque ligne garde la largeur de ses colonnes (fond de l'en-tête collé). */
+  min-width: fit-content;
 
   @variant max-md {
-    grid-template-columns: repeat(4, minmax(7.5rem, 1fr)) 4.5rem;
+    grid-template-columns: repeat(var(--track-count), minmax(7.5rem, 1fr)) 4.5rem;
   }
 }
 

@@ -70,6 +70,8 @@ export interface Track {
   readonly id: string;
   readonly name: string;
   readonly color: string;
+  /** Type du clip créé d'un clic dans une case vide de la piste. */
+  readonly defaultClipKind: ClipKind;
   readonly mixer: MixerSettings;
   /** Un emplacement par scène. */
   readonly clips: readonly (Clip | null)[];

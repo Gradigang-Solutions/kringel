@@ -34,7 +34,7 @@ export function EditorPanel() {
   return (
     <TrackScope
       color={located.track.color}
-      className="mt-2.5 flex min-h-0 flex-1 flex-col border-t border-gray-280 bg-gray-175 max-md:mt-0 max-md:border-t-0"
+      className="mt-2.5 flex min-h-0 flex-1 flex-col md:min-h-72 border-t border-gray-280 bg-gray-175 max-md:mt-0 max-md:border-t-0"
     >
       <EditorHeader
         clipId={located.clip.id}
