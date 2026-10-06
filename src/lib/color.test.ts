@@ -10,6 +10,11 @@ describe("withAlpha", () => {
     expect(withAlpha("oklch(0.78 0.14 65 / 0.5)", 1)).toBe("oklch(0.78 0.14 65 / 1)");
   });
 
+  it("accepte la forme minifiée du build de production (luminosité en pourcentage)", () => {
+    expect(withAlpha("oklch(94% .004 260)", 0.2)).toBe("oklch(94% .004 260 / 0.2)");
+    expect(withAlpha("oklch(0% 0 0/.5)", 1)).toBe("oklch(0% 0 0 / 1)");
+  });
+
   it("refuse une couleur qui n'est pas en oklch", () => {
     expect(() => withAlpha("#ff0000", 0.5)).toThrow();
   });

@@ -1,4 +1,5 @@
-const OKLCH_PATTERN = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*[\d.]+\s*)?\)$/;
+// Le minifieur CSS du build réécrit les tokens (« 0.94 0.004 » → « 94% .004 »), d'où les pourcentages.
+const OKLCH_PATTERN = /^oklch\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.]+)\s*(?:\/\s*[\d.]+%?\s*)?\)$/;
 
 /** Ajoute une transparence à une couleur oklch, pour le canvas et CodeMirror qui ne lisent pas les variables CSS. */
 export function withAlpha(color: string, alpha: number): string {
