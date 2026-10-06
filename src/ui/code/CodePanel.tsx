@@ -7,6 +7,7 @@ import { useUiStore } from "@/store/uiStore";
 import { ChangeLog } from "@/ui/code/ChangeLog";
 import { CopyButton } from "@/ui/code/CopyButton";
 import { lineStyles } from "@/ui/code/lineStyles";
+import { OpenInStrudelButton } from "@/ui/code/OpenInStrudelButton";
 import { ReadOnlyCode } from "@/ui/code/ReadOnlyCode";
 import { SelectionBar } from "@/ui/code/SelectionBar";
 import { Badge } from "@/ui/primitives/Badge";
@@ -32,9 +33,10 @@ export function CodePanel() {
       className="flex min-h-0 w-100 shrink-0 flex-col border-l border-gray-235 bg-gray-135 max-md:w-full max-md:flex-1 max-md:border-l-0"
     >
       <div className="flex h-11 shrink-0 items-center gap-2 border-b border-gray-215 pr-2.5 pl-4">
-        <h2 className="text-emphasis font-semibold">Strudel code</h2>
+        <h2 className="text-emphasis font-semibold whitespace-nowrap">Strudel code</h2>
         <Badge>read-only</Badge>
         <span className="flex-1" />
+        <OpenInStrudelButton />
         <CopyButton text={code.text} />
         <IconButton
           label="Hide code panel"

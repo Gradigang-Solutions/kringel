@@ -43,6 +43,8 @@ declare module "@strudel/core" {
   export function stack(...patterns: Pattern[]): Pattern;
   export function isPattern(value: unknown): value is Pattern;
   export function valueToMidi(value: object, fallback?: number): number;
+  export function code2hash(code: string): string;
+  export function hash2code(hash: string): string;
 }
 
 declare module "@strudel/mini" {}

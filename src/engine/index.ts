@@ -6,6 +6,7 @@ import { ensureScope } from "@/engine/scope";
 
 export { checkSource, previewNotes } from "@/engine/check";
 export { readMasterLevels } from "@/engine/meter";
+export { strudelReplUrl } from "@/engine/replUrl";
 export type { PreviewNote, StereoLevels } from "@/engine/types";
 
 export interface CodeUpdate {
