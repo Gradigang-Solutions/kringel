@@ -1,5 +1,6 @@
 import { forgetMissingClips } from "@/model/playback";
 import { findClip } from "@/model/project";
+import { logChange } from "@/store/changeLog";
 import { updatePlayback } from "@/store/playbackStore";
 import { getProject, redoProject, undoProject } from "@/store/projectStore";
 import { getUi, updateUi } from "@/store/uiStore";
@@ -24,6 +25,8 @@ function forgetMissingSelection(): void {
 export function undo(): boolean {
   if (!undoProject()) return false;
   forgetMissingSelection();
+  // Sans cette ligne, le journal afficherait encore le geste qui vient d'être annulé.
+  logChange({ key: "history:undo", trackId: null, text: "Undid last change", code: "⌘Z" });
   return true;
 }
 
@@ -31,5 +34,6 @@ export function undo(): boolean {
 export function redo(): boolean {
   if (!redoProject()) return false;
   forgetMissingSelection();
+  logChange({ key: "history:redo", trackId: null, text: "Redid last change", code: "⇧⌘Z" });
   return true;
 }
