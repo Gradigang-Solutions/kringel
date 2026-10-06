@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { clipControl } from "@/codegen/controls";
 import { PITCH_CLASS_NAMES, SCALE_MODES, SOUND_SOURCES } from "@/model/constants";
 import { soundsForSource } from "@/model/notes";
 import type { NotesClip, SoundSource } from "@/model/types";
@@ -17,9 +18,11 @@ import { IconButton } from "@/ui/primitives/IconButton";
 import { Switch } from "@/ui/primitives/Switch";
 import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 import { ToneButton } from "@/ui/editors/piano/ToneButton";
+import { CodeLinked } from "@/ui/shared/CodeLinked";
 
 const SOURCE_LABELS: Readonly<Record<SoundSource, string>> = { synth: "Synth", sample: "Sample" };
 const LABEL = "text-label text-fg-3";
+const TONE_CONTROLS = [clipControl("attack"), clipControl("release"), clipControl("lpf")];
 
 export interface PianoToolbarProps {
   readonly clip: NotesClip;
@@ -31,7 +34,11 @@ export function PianoToolbar({ clip, trackId }: PianoToolbarProps) {
   const selectedNoteId = useUiStore((state) => state.selectedNoteId);
   return (
     <EditorToolbar>
-      <div className="flex items-center gap-2">
+      <CodeLinked
+        trackId={trackId}
+        controls={[clipControl("scale")]}
+        className="flex items-center gap-2"
+      >
         <span className={LABEL}>Scale</span>
         <Select
           label="Scale root"
@@ -58,25 +65,36 @@ export function PianoToolbar({ clip, trackId }: PianoToolbarProps) {
             label="Gray out other notes"
           />
         </div>
-      </div>
+      </CodeLinked>
       <div className="flex items-center gap-2">
         <span className={LABEL}>Sound</span>
-        <SegmentedControl
-          label="Sound source"
-          options={SOUND_SOURCES.map((source) => ({ value: source, label: SOURCE_LABELS[source] }))}
-          value={clip.soundSource}
-          onChange={(source) => setSound(clip.id, source, clip.sound)}
-        />
-        <Select
-          label="Sound"
-          value={clip.sound}
-          options={soundsForSource(clip.soundSource).map((sound) => ({
-            value: sound,
-            label: sound,
-          }))}
-          onChange={(sound) => setSound(clip.id, clip.soundSource, sound)}
-        />
-        <ToneButton clip={clip} trackId={trackId} />
+        <CodeLinked
+          trackId={trackId}
+          controls={[clipControl("sound")]}
+          className="flex items-center gap-2"
+        >
+          <SegmentedControl
+            label="Sound source"
+            options={SOUND_SOURCES.map((source) => ({
+              value: source,
+              label: SOURCE_LABELS[source],
+            }))}
+            value={clip.soundSource}
+            onChange={(source) => setSound(clip.id, source, clip.sound)}
+          />
+          <Select
+            label="Sound"
+            value={clip.sound}
+            options={soundsForSource(clip.soundSource).map((sound) => ({
+              value: sound,
+              label: sound,
+            }))}
+            onChange={(sound) => setSound(clip.id, clip.soundSource, sound)}
+          />
+        </CodeLinked>
+        <CodeLinked trackId={trackId} controls={TONE_CONTROLS}>
+          <ToneButton clip={clip} trackId={trackId} />
+        </CodeLinked>
       </div>
       <div className="flex items-center gap-2">
         <span className={LABEL}>Length</span>

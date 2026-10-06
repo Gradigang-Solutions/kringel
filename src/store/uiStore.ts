@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { TrackControls } from "@/codegen/controls";
 
 /** Une ligne de « What your last clicks wrote ». */
 export interface ChangeEntry {
@@ -20,6 +21,9 @@ export interface ValueChange {
   readonly code: string;
 }
 
+/** Côté d'où vient la mise en évidence d'un contrôle : survol du code ou de l'interface. */
+export type HighlightOrigin = "code" | "interface";
+
 /** Vue affichée sur téléphone, où la grille, le mixer et le code ne tiennent pas ensemble. */
 export type PhoneTab = "clips" | "mixer" | "code";
 
@@ -40,6 +44,9 @@ interface UiStore {
   readonly isAudioStarting: boolean;
   /** Incrémenté à chaque annulation ou rétablissement, pour recréer les éditeurs qui gardent leur propre état. */
   readonly historyRevision: number;
+  /** Contrôle survolé, dans l'interface ou via sa ligne de code : les deux côtés le mettent en évidence. */
+  readonly highlightedControls: TrackControls | null;
+  readonly highlightOrigin: HighlightOrigin | null;
 }
 
 export const MAX_CHANGES = 3;
@@ -58,6 +65,8 @@ export const INITIAL_UI: UiStore = {
   pendingConversionClipId: null,
   isAudioStarting: false,
   historyRevision: 0,
+  highlightedControls: null,
+  highlightOrigin: null,
 };
 
 export const useUiStore = create<UiStore>()(() => INITIAL_UI);

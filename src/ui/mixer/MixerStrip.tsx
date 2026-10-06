@@ -1,3 +1,4 @@
+import { mixerControl } from "@/codegen/controls";
 import { formatMixerCall } from "@/codegen/mixer";
 import { cn } from "@/lib/cn";
 import { GAIN_RANGE, MIXER_DEFAULTS, ROOM_RANGE } from "@/model/constants";
@@ -9,6 +10,7 @@ import { MixerFxButton } from "@/ui/mixer/MixerFxButton";
 import { stripButtonVariants } from "@/ui/mixer/stripButtonStyle";
 import { ParamSlider } from "@/ui/shared/ParamSlider";
 import { Fader } from "@/ui/primitives/Fader";
+import { CodeLinked } from "@/ui/shared/CodeLinked";
 import { TrackScope } from "@/ui/shared/TrackScope";
 
 const GAIN_STEP = 0.01;
@@ -58,7 +60,11 @@ export function MixerStrip({ track }: MixerStripProps) {
         </span>
       </div>
       <div className="flex min-h-0 flex-1 gap-3.5">
-        <div className="flex flex-col items-center gap-1.5">
+        <CodeLinked
+          trackId={track.id}
+          controls={[mixerControl("gain")]}
+          className="flex flex-col items-center gap-1.5"
+        >
           <div className="min-h-0 flex-1">
             <Fader
               value={mixer.gain}
@@ -72,30 +78,36 @@ export function MixerStrip({ track }: MixerStripProps) {
             />
           </div>
           <span className="font-mono text-caption">{mixer.gain.toFixed(2)}</span>
-        </div>
+        </CodeLinked>
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <ParamSlider
-            label="Pan"
-            valueLabel={panLabel(mixer.pan)}
-            code={formatMixerCall("pan", mixer)}
-            position={mixer.pan}
-            fillFrom="center"
-            onChange={(pan) => setMixerParam(track.id, "pan", pan)}
-          />
-          <ParamSlider
-            label="Filter"
-            valueLabel={filterLabel(mixer.lpf)}
-            code={formatMixerCall("lpf", mixer)}
-            position={filterToPosition("lpf", mixer.lpf)}
-            onChange={(position) => setFilter(track.id, "lpf", positionToFilter("lpf", position))}
-          />
-          <ParamSlider
-            label="Reverb"
-            valueLabel={mixer.room.toFixed(2)}
-            code={formatMixerCall("room", mixer)}
-            position={mixer.room / ROOM_RANGE.max}
-            onChange={(room) => setMixerParam(track.id, "room", room * ROOM_RANGE.max)}
-          />
+          <CodeLinked trackId={track.id} controls={[mixerControl("pan")]}>
+            <ParamSlider
+              label="Pan"
+              valueLabel={panLabel(mixer.pan)}
+              code={formatMixerCall("pan", mixer)}
+              position={mixer.pan}
+              fillFrom="center"
+              onChange={(pan) => setMixerParam(track.id, "pan", pan)}
+            />
+          </CodeLinked>
+          <CodeLinked trackId={track.id} controls={[mixerControl("lpf")]}>
+            <ParamSlider
+              label="Filter"
+              valueLabel={filterLabel(mixer.lpf)}
+              code={formatMixerCall("lpf", mixer)}
+              position={filterToPosition("lpf", mixer.lpf)}
+              onChange={(position) => setFilter(track.id, "lpf", positionToFilter("lpf", position))}
+            />
+          </CodeLinked>
+          <CodeLinked trackId={track.id} controls={[mixerControl("room")]}>
+            <ParamSlider
+              label="Reverb"
+              valueLabel={mixer.room.toFixed(2)}
+              code={formatMixerCall("room", mixer)}
+              position={mixer.room / ROOM_RANGE.max}
+              onChange={(room) => setMixerParam(track.id, "room", room * ROOM_RANGE.max)}
+            />
+          </CodeLinked>
           <div className="flex-1" />
           <div className="flex gap-1.5">
             <ToggleButton

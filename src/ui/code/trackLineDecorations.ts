@@ -30,6 +30,7 @@ function buildDecorations(view: EditorView["state"], styles: readonly LineStyle[
       "cm-track-line",
       style.isSelected ? "cm-track-line-selected" : "",
       style.isDimmed ? "cm-track-line-dimmed" : "",
+      style.isHighlighted ? "cm-track-line-highlighted" : "",
     ];
     builder.add(
       line.from,
@@ -69,6 +70,10 @@ const trackLineTheme = EditorView.theme({
     backgroundColor: "color-mix(in oklch, var(--track-color) 11%, transparent)",
   },
   ".cm-track-line-dimmed": { opacity: "0.42" },
+  ".cm-track-line-highlighted": {
+    boxShadow: "inset 3px 0 0 var(--track-color)",
+    backgroundColor: "color-mix(in oklch, var(--track-color) 22%, transparent)",
+  },
   ".cm-line-tag": {
     marginLeft: "12px",
     padding: "0 5px",

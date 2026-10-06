@@ -602,4 +602,33 @@ describe("informations par ligne", () => {
       ),
     ).toBe(true);
   });
+
+  it("relie chaque appel chaîné au contrôle qui l'écrit", () => {
+    const melody = makeNotesClip({ id: "melody", notes: [makeNote(60, 0, 8)], attack: 0.2 });
+    const project = withMixer(
+      withClip(
+        withClip(makeProject(), 0, 0, makeStepsClip({ ...fourOnTheFloor, swing: 0.2 })),
+        2,
+        0,
+        melody,
+      ),
+      2,
+      { room: 0.4 },
+    );
+    const generated = generateCode(project, playing(project, { 0: "drums", 2: "melody" }));
+    const controlByLine = generated.text.split("\n").flatMap((text, index) => {
+      const control = generated.lines[index]?.control;
+      return control ? [`${text.trim()} → ${JSON.stringify(control)}`] : [];
+    });
+    expect(controlByLine).toMatchInlineSnapshot(`
+      [
+        ".bank("RolandTR909") → {"kind":"clip","setting":"kit"}",
+        ".swingBy(0.2, 8), → {"kind":"clip","setting":"swing"}",
+        ".scale("C4:minor") → {"kind":"clip","setting":"scale"}",
+        ".s("sawtooth") → {"kind":"clip","setting":"sound"}",
+        ".attack(0.2) → {"kind":"clip","setting":"attack"}",
+        ".room(0.4) → {"kind":"mixer","param":"room"}",
+      ]
+    `);
+  });
 });

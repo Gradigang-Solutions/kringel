@@ -1,3 +1,4 @@
+import { sharesControl, type TrackControls } from "@/codegen/controls";
 import type { CodeLineInfo } from "@/codegen/generate";
 
 export interface LineTag {
@@ -11,6 +12,8 @@ export interface LineStyle {
   readonly trackColor: string;
   readonly isSelected: boolean;
   readonly isDimmed: boolean;
+  /** Ligne écrite par le contrôle survolé dans l'interface. */
+  readonly isHighlighted: boolean;
   readonly tag: LineTag | null;
 }
 
@@ -22,6 +25,7 @@ export function lineStyles(
   lines: readonly CodeLineInfo[],
   selectedClipId: string | null,
   colorsByTrack: ReadonlyMap<string, string>,
+  highlighted: TrackControls | null,
 ): LineStyle[] {
   return lines.flatMap((info, index) => {
     const color = info.trackId === null ? undefined : colorsByTrack.get(info.trackId);
@@ -34,10 +38,23 @@ export function lineStyles(
         trackColor: color,
         isSelected: info.clipId !== null && info.clipId === selectedClipId,
         isDimmed: info.status === "queued",
+        isHighlighted: isLineOfControl(info, highlighted),
         tag: isBlockStart ? tag : null,
       },
     ];
   });
+}
+
+function isLineOfControl(info: CodeLineInfo, highlighted: TrackControls | null): boolean {
+  if (highlighted === null || info.control === null || info.trackId === null) return false;
+  return sharesControl(highlighted, info.trackId, [info.control]);
+}
+
+/** Contrôle de l'interface qui écrit une ligne (index à partir de 0), ou null. */
+export function controlAtLine(lines: readonly CodeLineInfo[], index: number): TrackControls | null {
+  const info = lines[index];
+  if (!info || info.trackId === null || info.control === null) return null;
+  return { trackId: info.trackId, controls: [info.control] };
 }
 
 /** Lignes occupées par un clip dans le code, ou null s'il n'y figure pas. */

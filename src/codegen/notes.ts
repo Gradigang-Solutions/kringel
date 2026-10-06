@@ -1,6 +1,7 @@
 import { formatNumber, call, method, quote } from "@/codegen/format";
 import { alternateCycles, eventsInCycle, voiceToMini, type MiniEvent } from "@/codegen/mini";
-import type { ClipPattern } from "@/codegen/pattern";
+import type { PatternCall } from "@/codegen/controls";
+import { optionalCall, settingCall, type ClipPattern } from "@/codegen/pattern";
 import { range } from "@/lib/math";
 import { DEFAULT_VELOCITY, STEPS_PER_CYCLE } from "@/model/constants";
 import {
@@ -81,13 +82,21 @@ export function usesScaleDegrees(clip: NotesClip): boolean {
   return clip.notes.every((note) => isInScale(note.pitch, clip.root, clip.scale));
 }
 
-function velocityCalls(clip: NotesClip): string[] {
+function velocityCode(clip: NotesClip): string | null {
   const velocities = new Set(clip.notes.map((note) => note.velocity));
   const [single] = velocities;
-  if (velocities.size === 1 && single === DEFAULT_VELOCITY) return [];
+  if (velocities.size === 1 && single === DEFAULT_VELOCITY) return null;
   if (velocities.size === 1 && single !== undefined)
-    return [method("velocity", formatNumber(single))];
-  return [method("velocity", quote(clipMini(clip, (note) => formatNumber(note.velocity))))];
+    return method("velocity", formatNumber(single));
+  return method("velocity", quote(clipMini(clip, (note) => formatNumber(note.velocity))));
+}
+
+function velocityCalls(clip: NotesClip): PatternCall[] {
+  return optionalCall(velocityCode(clip), null);
+}
+
+export function soundCall(sound: string): string {
+  return method("s", quote(sound));
 }
 
 /** Appel d'enveloppe, ou null quand le clip garde la valeur par défaut de Strudel. */
@@ -101,18 +110,18 @@ export function clipFilterCall(cutoff: number | null): string | null {
 }
 
 /** Son du clip après la source : enveloppe puis filtre, sans les valeurs par défaut. */
-function toneCalls(clip: NotesClip): string[] {
+function toneCalls(clip: NotesClip): PatternCall[] {
   return [
-    envelopeCall("attack", clip.attack),
-    envelopeCall("release", clip.release),
-    clipFilterCall(clip.lpf),
-  ].filter((methodCall) => methodCall !== null);
+    ...optionalCall(envelopeCall("attack", clip.attack), "attack"),
+    ...optionalCall(envelopeCall("release", clip.release), "release"),
+    ...optionalCall(clipFilterCall(clip.lpf), "lpf"),
+  ];
 }
 
 /** Notes dans la gamme : degrés avec `n().scale()` ; sinon noms de notes avec `note()`. */
 export function notesPattern(clip: NotesClip): ClipPattern | null {
   if (clip.notes.length === 0) return null;
-  const sound = method("s", quote(clip.sound));
+  const sound = settingCall(soundCall(clip.sound), "sound");
   if (!usesScaleDegrees(clip)) {
     const mini = clipMini(clip, (note) => strudelNoteName(note.pitch));
     return {
@@ -127,7 +136,10 @@ export function notesPattern(clip: NotesClip): ClipPattern | null {
   const mini = clipMini(clip, (note) =>
     String(scaleDegree(note.pitch, clip.root, clip.scale, octave) ?? 0),
   );
-  const scale = method("scale", quote(strudelScaleName(clip.root, clip.scale, octave)));
+  const scale = settingCall(
+    method("scale", quote(strudelScaleName(clip.root, clip.scale, octave))),
+    "scale",
+  );
   return {
     source: [call("n", quote(mini))],
     calls: [...velocityCalls(clip), scale, sound, ...toneCalls(clip)],

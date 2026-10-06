@@ -4,6 +4,7 @@ import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { useEffect, useRef } from "react";
 import type { CodeError } from "@/model/playback";
 import { errorDecorations, setCodeError } from "@/ui/editors/code/errorDecorations";
+import { strudelDocsTooltip } from "@/ui/shared/codemirror/strudelDocsTooltip";
 import { strudelLanguage } from "@/ui/shared/codemirror/strudelTheme";
 
 export interface EditableCodeProps {
@@ -39,6 +40,7 @@ export function EditableCode({ source, error, onChange, onRun }: EditableCodePro
             ...historyKeymap,
           ]),
           strudelLanguage(),
+          strudelDocsTooltip(),
           errorDecorations(),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) handlers.current.onChange(update.state.doc.toString());

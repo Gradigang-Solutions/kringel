@@ -1,12 +1,14 @@
 import { ChevronsRight } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { selectClip } from "@/store/actions/clips";
+import { clearHighlight, highlightControls } from "@/store/actions/codeLinks";
 import { setCodePanelOpen } from "@/store/actions/layout";
 import { useProjectStore } from "@/store/projectStore";
 import { useGeneratedCode } from "@/store/selectors";
 import { useUiStore } from "@/store/uiStore";
 import { ChangeLog } from "@/ui/code/ChangeLog";
 import { CopyButton } from "@/ui/code/CopyButton";
-import { lineStyles } from "@/ui/code/lineStyles";
+import { controlAtLine, lineStyles } from "@/ui/code/lineStyles";
 import { OpenInStrudelButton } from "@/ui/code/OpenInStrudelButton";
 import { ReadOnlyCode } from "@/ui/code/ReadOnlyCode";
 import { SelectionBar } from "@/ui/code/SelectionBar";
@@ -18,14 +20,31 @@ export function CodePanel() {
   const code = useGeneratedCode();
   const tracks = useProjectStore((state) => state.project.tracks);
   const selectedClipId = useUiStore((state) => state.selectedClipId);
+  const highlighted = useUiStore((state) => state.highlightedControls);
   const styles = useMemo(
     () =>
       lineStyles(
         code.lines,
         selectedClipId,
         new Map(tracks.map((track) => [track.id, track.color])),
+        highlighted,
       ),
-    [code.lines, selectedClipId, tracks],
+    [code.lines, selectedClipId, tracks, highlighted],
+  );
+  const handleLineHover = useCallback(
+    (index: number | null) => {
+      const hovered = index === null ? null : controlAtLine(code.lines, index);
+      if (hovered === null) clearHighlight("code");
+      else highlightControls(hovered, "code");
+    },
+    [code.lines],
+  );
+  const handleLineClick = useCallback(
+    (index: number) => {
+      const clipId = code.lines[index]?.clipId;
+      if (clipId) selectClip(clipId);
+    },
+    [code.lines],
   );
   return (
     <aside
@@ -49,7 +68,12 @@ export function CodePanel() {
       </div>
       <SelectionBar lines={code.lines} />
       <div className="min-h-0 flex-1">
-        <ReadOnlyCode text={code.text} styles={styles} />
+        <ReadOnlyCode
+          text={code.text}
+          styles={styles}
+          onLineHover={handleLineHover}
+          onLineClick={handleLineClick}
+        />
       </div>
       <ChangeLog />
     </aside>

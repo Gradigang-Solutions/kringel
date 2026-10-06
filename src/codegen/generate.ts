@@ -1,5 +1,6 @@
 import { clipPattern } from "@/codegen/clip";
 import { endsWithLineComment } from "@/codegen/code";
+import { clipControl, mixerControl, type CodeControl } from "@/codegen/controls";
 import { mixerCalls } from "@/codegen/mixer";
 import { CHAIN_INDENT } from "@/codegen/pattern";
 import { BEATS_PER_CYCLE } from "@/model/constants";
@@ -13,6 +14,8 @@ export interface CodeLineInfo {
   readonly trackId: string | null;
   readonly clipId: string | null;
   readonly status: BlockStatus | null;
+  /** Contrôle de l'interface qui écrit cette ligne, pour relier le code et l'interface. */
+  readonly control: CodeControl | null;
 }
 
 export interface GeneratedCode {
@@ -26,7 +29,7 @@ interface Line {
 }
 
 const BLOCK_INDENT = "  ";
-const NO_INFO: CodeLineInfo = { trackId: null, clipId: null, status: null };
+const NO_INFO: CodeLineInfo = { trackId: null, clipId: null, status: null, control: null };
 
 const EMPTY_PROJECT_INTRO = [
   "// Nothing here yet.",
@@ -70,15 +73,25 @@ function trackBlock(track: Track, playback: PlaybackState): Line[] | null {
     trackId: track.id,
     clipId: clip.id,
     status: blockStatus(clip, track, playback),
+    control: null,
   };
-  const texts = [
-    `// ${track.name} · ${clip.name.replace(/\s+/g, " ")}`,
-    ...pattern.source,
-    ...[...pattern.calls, ...mixerCalls(track.mixer)].map(
-      (methodCall) => `${CHAIN_INDENT}${methodCall}`,
+  const line = (text: string, control: CodeControl | null = null): Line => ({
+    text: `${BLOCK_INDENT}${text}`,
+    info: { ...info, control },
+  });
+  return [
+    line(`// ${track.name} · ${clip.name.replace(/\s+/g, " ")}`),
+    ...pattern.source.map((text) => line(text)),
+    ...pattern.calls.map((methodCall) =>
+      line(
+        `${CHAIN_INDENT}${methodCall.code}`,
+        methodCall.setting === null ? null : clipControl(methodCall.setting),
+      ),
+    ),
+    ...mixerCalls(track.mixer).map((methodCall) =>
+      line(`${CHAIN_INDENT}${methodCall.code}`, mixerControl(methodCall.param)),
     ),
   ];
-  return texts.map((text) => ({ text: `${BLOCK_INDENT}${text}`, info }));
 }
 
 /** Sépare les blocs du stack par des virgules, sans la placer dans un commentaire de fin de ligne. */
@@ -88,7 +101,7 @@ function joinBlocks(blocks: readonly Line[][]): Line[] {
     if (index === blocks.length - 1 || last === undefined) return block;
     const head = block.slice(0, -1);
     if (endsWithLineComment(last.text)) {
-      return [...head, last, { text: `${BLOCK_INDENT},`, info: last.info }];
+      return [...head, last, { text: `${BLOCK_INDENT},`, info: { ...last.info, control: null } }];
     }
     return [...head, { text: `${last.text},`, info: last.info }];
   });

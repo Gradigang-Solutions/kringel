@@ -1,6 +1,6 @@
 import { call, formatNumber, method, quote } from "@/codegen/format";
 import { alternateCycles, eventsInCycle, voiceToMini, type MiniEvent } from "@/codegen/mini";
-import type { ClipPattern } from "@/codegen/pattern";
+import { optionalCall, settingCall, type ClipPattern } from "@/codegen/pattern";
 import { range } from "@/lib/math";
 import {
   DEFAULT_CHANCE,
@@ -88,20 +88,22 @@ export function audibleRows(clip: StepsClip): StepRow[] {
   return clip.rows.filter((row) => !row.isMuted && hitSteps(row).length > 0);
 }
 
+export function bankCall(kit: string): string {
+  return method("bank", quote(kit));
+}
+
 /** Le swing retarde le second pas de chaque paire : `swingBy(retard, nombre de paires par cycle)`. */
 export function swingCall(swing: number): string | null {
   if (swing === SWING_RANGE.min) return null;
   return method("swingBy", formatNumber(swing), formatNumber(SWING_SLICES_PER_CYCLE));
 }
 
-function swingCalls(clip: StepsClip): string[] {
-  const swing = swingCall(clip.swing);
-  return swing === null ? [] : [swing];
-}
-
 export function stepsPattern(clip: StepsClip): ClipPattern | null {
   const patterns = soundPatterns(audibleRows(clip), clip.cycles);
-  const calls = [method("bank", quote(clip.kit)), ...swingCalls(clip)];
+  const calls = [
+    settingCall(bankCall(clip.kit), "kit"),
+    ...optionalCall(swingCall(clip.swing), "swing"),
+  ];
   const [single] = patterns;
   if (single === undefined) return null;
   if (patterns.length === 1) return { source: [single], calls };

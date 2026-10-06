@@ -22,6 +22,14 @@ export function formatMixerCall(param: MixerParam, mixer: MixerSettings): string
   return method(param, formatNumber(value));
 }
 
-export function mixerCalls(mixer: MixerSettings): string[] {
-  return PARAM_ORDER.flatMap((param) => formatMixerCall(param, mixer) ?? []);
+export interface MixerCall {
+  readonly code: string;
+  readonly param: MixerParam;
+}
+
+export function mixerCalls(mixer: MixerSettings): MixerCall[] {
+  return PARAM_ORDER.flatMap((param) => {
+    const code = formatMixerCall(param, mixer);
+    return code === null ? [] : [{ code, param }];
+  });
 }

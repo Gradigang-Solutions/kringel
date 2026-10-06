@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { sharesControl, type CodeControl } from "@/codegen/controls";
 import { generateCode, type GeneratedCode } from "@/codegen/generate";
 import { clipPlayStatus, type ClipPlayStatus, type PlaybackState } from "@/model/playback";
 import { findClip, findTrack, hasAnyClip, type LocatedClip } from "@/model/project";
@@ -70,4 +71,15 @@ export function useCanUndo(): boolean {
 
 export function useCanRedo(): boolean {
   return useProjectStore((state) => state.history.future.length > 0);
+}
+
+/** Vrai quand l'un des contrôles de la piste est mis en évidence depuis le code ou l'interface. */
+export function useIsControlHighlighted(
+  trackId: string,
+  controls: readonly CodeControl[],
+): boolean {
+  return useUiStore((state) => {
+    const highlighted = state.highlightedControls;
+    return highlighted !== null && sharesControl(highlighted, trackId, controls);
+  });
 }

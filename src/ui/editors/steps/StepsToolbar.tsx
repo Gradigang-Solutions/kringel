@@ -1,4 +1,5 @@
-import { quote } from "@/codegen/format";
+import { clipControl } from "@/codegen/controls";
+import { bankCall } from "@/codegen/steps";
 import { DRUM_KITS } from "@/model/constants";
 import { stepCount } from "@/model/timing";
 import type { ClipCycles, StepsClip } from "@/model/types";
@@ -8,12 +9,22 @@ import { Select } from "@/ui/primitives/Select";
 import { cycleOptions, parseCycles } from "@/ui/editors/cycleOptions";
 import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 import { SwingControl } from "@/ui/editors/steps/SwingControl";
+import { CodeLinked } from "@/ui/shared/CodeLinked";
 
-export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
+export interface StepsToolbarProps {
+  readonly clip: StepsClip;
+  readonly trackId: string;
+}
+
+export function StepsToolbar({ clip, trackId }: StepsToolbarProps) {
   const steps = stepCount(clip.cycles);
   return (
     <EditorToolbar>
-      <div className="flex items-center gap-2">
+      <CodeLinked
+        trackId={trackId}
+        controls={[clipControl("kit")]}
+        className="flex items-center gap-2"
+      >
         <span className="text-label text-fg-3">Kit</span>
         <Select
           label="Drum kit"
@@ -21,8 +32,8 @@ export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
           options={DRUM_KITS.map((kit) => ({ value: kit.id, label: kit.id }))}
           onChange={(kit) => setKit(clip.id, kit)}
         />
-        <span className="font-mono text-caption text-track">.bank({quote(clip.kit)})</span>
-      </div>
+        <span className="font-mono text-caption text-track">{bankCall(clip.kit)}</span>
+      </CodeLinked>
       <div className="flex items-center gap-2">
         <span className="text-label text-fg-3">Length</span>
         <SegmentedControl
@@ -38,7 +49,9 @@ export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
           {steps} steps · {clip.cycles} {clip.cycles === 1 ? "cycle" : "cycles"}
         </span>
       </div>
-      <SwingControl clip={clip} />
+      <CodeLinked trackId={trackId} controls={[clipControl("swing")]}>
+        <SwingControl clip={clip} />
+      </CodeLinked>
     </EditorToolbar>
   );
 }

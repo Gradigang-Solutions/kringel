@@ -20,10 +20,10 @@ describe("formatMixerCall", () => {
 describe("mixerCalls", () => {
   it("ordonne les appels : filtre, reverb, panoramique, niveau", () => {
     expect(mixerCalls({ ...MIXER_DEFAULTS, gain: 0.6, pan: 0.6, lpf: 800, room: 0.3 })).toEqual([
-      ".lpf(800)",
-      ".room(0.3)",
-      ".pan(0.6)",
-      ".gain(0.6)",
+      { code: ".lpf(800)", param: "lpf" },
+      { code: ".room(0.3)", param: "room" },
+      { code: ".pan(0.6)", param: "pan" },
+      { code: ".gain(0.6)", param: "gain" },
     ]);
   });
 });

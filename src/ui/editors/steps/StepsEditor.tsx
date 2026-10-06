@@ -37,7 +37,7 @@ export function StepsEditor({ clip, trackId }: StepsEditorProps) {
   };
   return (
     <>
-      <StepsToolbar clip={clip} />
+      <StepsToolbar clip={clip} trackId={trackId} />
       <div
         className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-3 pb-3.5 max-md:overflow-x-auto max-md:px-0"
         style={scrollerStyle}
