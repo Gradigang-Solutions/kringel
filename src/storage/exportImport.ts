@@ -16,12 +16,13 @@ const envelopeSchema = z.object({
   project: z.unknown(),
 });
 
+/** Enveloppe commune au fichier exporté et au lien de partage : format et version, puis le projet. */
+export function projectEnvelope(project: Project): z.infer<typeof envelopeSchema> {
+  return { format: FILE_FORMAT, version: PROJECT_SCHEMA_VERSION, project };
+}
+
 export function serializeProject(project: Project): string {
-  return JSON.stringify(
-    { format: FILE_FORMAT, version: PROJECT_SCHEMA_VERSION, project },
-    null,
-    JSON_INDENT,
-  );
+  return JSON.stringify(projectEnvelope(project), null, JSON_INDENT);
 }
 
 export function projectFileName(project: Project): string {
@@ -41,10 +42,10 @@ function parseJson(text: string): unknown {
   }
 }
 
-/** Valide un fichier exporté : format, version, puis contenu du projet. */
+/** Valide un projet exporté (fichier ou lien) : format, version, puis contenu du projet. */
 export function parseProjectFile(text: string): ImportResult {
   const envelope = envelopeSchema.safeParse(parseJson(text));
-  if (!envelope.success) return { isOk: false, error: "This file is not a Kringel project." };
+  if (!envelope.success) return { isOk: false, error: "This is not a Kringel project." };
   if (envelope.data.version > PROJECT_SCHEMA_VERSION) {
     return { isOk: false, error: "This project was made with a newer version of Kringel." };
   }

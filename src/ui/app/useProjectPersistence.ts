@@ -9,10 +9,10 @@ const AUTOSAVE_DELAY_MS = 600;
 export function useProjectPersistence(): void {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const unsubscribe = useProjectStore.subscribe((state, previous) => {
-      if (state.project === previous.project || state.saveStatus !== "pending") return;
+    const scheduleSave = () => {
+      const { project, saveStatus } = useProjectStore.getState();
+      if (saveStatus !== "pending") return;
       clearTimeout(timer);
-      const { project } = state;
       timer = setTimeout(() => {
         saveProject(project, Date.now())
           .then(() => {
@@ -22,7 +22,12 @@ export function useProjectPersistence(): void {
             showNotice("Couldn't save the project in this browser. Export it to keep your work.");
           });
       }, AUTOSAVE_DELAY_MS);
+    };
+    const unsubscribe = useProjectStore.subscribe((state, previous) => {
+      if (state.project !== previous.project) scheduleSave();
     });
+    // Un projet ouvert avant le premier rendu (lien de partage) attend déjà d'être sauvegardé.
+    scheduleSave();
     return () => {
       clearTimeout(timer);
       unsubscribe();

@@ -5,7 +5,7 @@ import { Button } from "@/ui/primitives/Button";
 import { Dropdown } from "@/ui/primitives/Menu";
 import { exportProject, importProject, startNewProject } from "@/ui/transport/projectFiles";
 
-/** Remplace le bouton « Share » de la maquette : le partage par URL est hors périmètre de la v0. */
+/** Menu du projet, à côté du bouton Share : historique, fichiers JSON, nouveau projet. */
 export function ProjectMenu() {
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
@@ -13,7 +13,7 @@ export function ProjectMenu() {
     <Dropdown
       trigger={
         <Button
-          variant="primary"
+          variant="subtle"
           size="md"
           aria-label="Project"
           className="gap-1.5 pr-2.5 max-md:pl-2.5"

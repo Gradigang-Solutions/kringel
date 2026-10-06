@@ -37,7 +37,7 @@ describe("rejet à l'import", () => {
   it("refuse un fichier qui n'est pas du JSON", () => {
     expect(parseProjectFile("pas du json")).toEqual({
       isOk: false,
-      error: "This file is not a Kringel project.",
+      error: "This is not a Kringel project.",
     });
   });
 

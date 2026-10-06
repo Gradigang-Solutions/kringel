@@ -3,6 +3,7 @@ import { setCodePanelOpen } from "@/store/actions/layout";
 import { useUiStore } from "@/store/uiStore";
 import { ProjectBrand } from "@/ui/transport/ProjectBrand";
 import { ProjectMenu } from "@/ui/transport/ProjectMenu";
+import { ShareButton } from "@/ui/transport/ShareButton";
 import { TransportControls } from "@/ui/transport/TransportControls";
 
 export function TopBar() {
@@ -22,6 +23,7 @@ export function TopBar() {
           <span className="font-mono text-label text-fg-2">{"{ }"}</span>
           Code
         </Button>
+        <ShareButton />
         <ProjectMenu />
       </div>
     </header>
