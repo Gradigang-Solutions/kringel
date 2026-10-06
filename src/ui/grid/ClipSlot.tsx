@@ -1,0 +1,94 @@
+import { TRACK_PRESETS } from "@/model/constants";
+import type { ClipKind, SlotAddress } from "@/model/types";
+import {
+  createClip,
+  deleteClip,
+  duplicateClip,
+  openEditor,
+  requestConversion,
+  selectClip,
+  stopTrack,
+} from "@/store/actions/clips";
+import { usePlaybackStore } from "@/store/playbackStore";
+import { useProjectStore } from "@/store/projectStore";
+import { useIsPlaying } from "@/store/selectors";
+import { useUiStore } from "@/store/uiStore";
+import { clipPlayStatus } from "@/model/playback";
+import { launchClipAndPlay } from "@/ui/app/playbackController";
+import { ClipSlotEmpty } from "@/ui/grid/ClipSlotEmpty";
+import { ClipSlotFilled } from "@/ui/grid/ClipSlotFilled";
+import { ContextMenuArea, type MenuItem } from "@/ui/primitives/Menu";
+
+const KIND_MENU_LABELS: Readonly<Record<ClipKind, string>> = {
+  steps: "New step sequence",
+  notes: "New piano roll",
+  code: "New code clip",
+};
+
+export interface ClipSlotProps {
+  readonly address: SlotAddress;
+  readonly trackIndex: number;
+  readonly isCompact: boolean;
+  readonly isInvite: boolean;
+}
+
+function defaultKind(trackIndex: number): ClipKind {
+  return TRACK_PRESETS[trackIndex]?.defaultClipKind ?? "notes";
+}
+
+export function ClipSlot({ address, trackIndex, isCompact, isInvite }: ClipSlotProps) {
+  const clip = useProjectStore(
+    (state) =>
+      state.project.tracks.find((track) => track.id === address.trackId)?.clips[
+        address.sceneIndex
+      ] ?? null,
+  );
+  const status = usePlaybackStore((state) =>
+    clip ? clipPlayStatus(state.playback, address.trackId, clip.id) : "idle",
+  );
+  const isSelected = useUiStore((state) => clip !== null && state.selectedClipId === clip.id);
+  const isTransportRunning = useIsPlaying();
+
+  if (!clip) {
+    const createItems: MenuItem[] = (["steps", "notes", "code"] as const).map((kind) => ({
+      label: KIND_MENU_LABELS[kind],
+      onSelect: () => createClip(address, kind),
+    }));
+    return (
+      <ContextMenuArea items={createItems}>
+        <ClipSlotEmpty
+          isInvite={isInvite}
+          isCompact={isCompact}
+          label="Create clip"
+          onCreate={() => createClip(address, defaultKind(trackIndex))}
+        />
+      </ContextMenuArea>
+    );
+  }
+
+  const items: MenuItem[] = [
+    { label: "Edit", onSelect: () => openEditor(clip.id) },
+    { label: "Duplicate", onSelect: () => duplicateClip(clip.id), shortcut: "⌘D" },
+    {
+      label: "Convert to code",
+      onSelect: () => requestConversion(clip.id),
+      isDisabled: clip.kind === "code",
+    },
+    { label: "Delete", onSelect: () => deleteClip(clip.id), shortcut: "⌫" },
+  ];
+  return (
+    <ContextMenuArea items={items}>
+      <ClipSlotFilled
+        clip={clip}
+        status={status}
+        isTransportRunning={isTransportRunning}
+        isSelected={isSelected}
+        isCompact={isCompact}
+        onSelect={() => selectClip(clip.id)}
+        onOpen={() => openEditor(clip.id)}
+        onLaunch={() => launchClipAndPlay(address.trackId, clip.id)}
+        onStop={() => stopTrack(address.trackId)}
+      />
+    </ContextMenuArea>
+  );
+}

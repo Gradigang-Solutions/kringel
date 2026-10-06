@@ -1,0 +1,46 @@
+import Dexie, { type EntityTable } from "dexie";
+import { PROJECT_SCHEMA_VERSION } from "@/model/constants";
+import type { Project } from "@/model/types";
+import { projectSchema } from "@/storage/schema";
+
+interface StoredProject {
+  readonly id: string;
+  readonly savedAt: number;
+  readonly data: unknown;
+}
+
+interface Setting {
+  readonly key: string;
+  readonly value: string;
+}
+
+const LAST_PROJECT_KEY = "lastProjectId";
+
+class KringleDatabase extends Dexie {
+  projects!: EntityTable<StoredProject, "id">;
+  settings!: EntityTable<Setting, "key">;
+
+  constructor() {
+    super("kringle");
+    this.version(1).stores({ projects: "id, savedAt", settings: "key" });
+  }
+}
+
+const db = new KringleDatabase();
+
+export async function saveProject(project: Project, now: number): Promise<void> {
+  await db.transaction("rw", db.projects, db.settings, async () => {
+    await db.projects.put({ id: project.id, savedAt: now, data: project });
+    await db.settings.put({ key: LAST_PROJECT_KEY, value: project.id });
+  });
+}
+
+/** Dernier projet ouvert, validé ; null s'il n'y en a pas ou s'il est illisible. */
+export async function loadLastProject(): Promise<Project | null> {
+  const setting = await db.settings.get(LAST_PROJECT_KEY);
+  if (!setting) return null;
+  const stored = await db.projects.get(setting.value);
+  const parsed = projectSchema.safeParse(stored?.data);
+  if (!parsed.success || parsed.data.version !== PROJECT_SCHEMA_VERSION) return null;
+  return parsed.data;
+}
