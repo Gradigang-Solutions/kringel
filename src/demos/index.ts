@@ -11,7 +11,7 @@ export interface Demo {
 
 export const DEMOS: readonly Demo[] = [
   { project: firstTechno, genre: "Techno" },
-  { project: dustyKeys, genre: "Lo-fi" },
-  { project: acidLine, genre: "Acid" },
+  { project: dustyKeys, genre: "Lo-fi hip-hop" },
+  { project: acidLine, genre: "Acid techno" },
   { project: slowTide, genre: "Ambient" },
 ];

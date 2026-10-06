@@ -119,7 +119,8 @@ export function renameClip(project: Project, clipId: string, name: string): Proj
   );
 }
 
-function withFreshIds(clip: Clip, nextId: IdGenerator): Clip {
+/** Le même clip avec de nouveaux identifiants (clip, lignes, notes), pour le placer ailleurs. */
+export function withFreshIds(clip: Clip, nextId: IdGenerator): Clip {
   switch (clip.kind) {
     case "steps":
       return { ...clip, id: nextId(), rows: clip.rows.map((row) => ({ ...row, id: nextId() })) };
