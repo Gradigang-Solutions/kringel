@@ -4,9 +4,12 @@ import {
   isEngineReady,
   play,
   setCode,
+  startRecording,
   stop,
+  stopRecording,
   waitForCycle,
 } from "@/engine";
+import { encodeWav } from "@/lib/wav";
 import { recordCodeCheck } from "@/store/actions/code";
 import { launchClip, launchScene } from "@/store/actions/clips";
 import { showNotice } from "@/store/actions/project";
@@ -15,6 +18,8 @@ import { getPlayback, usePlaybackStore } from "@/store/playbackStore";
 import { getProject, useProjectStore } from "@/store/projectStore";
 import { getGeneratedCode } from "@/store/selectors";
 import { getUi, updateUi } from "@/store/uiStore";
+import { projectSlug } from "@/storage/exportImport";
+import { downloadBlob } from "@/ui/shared/files";
 
 /** Les évaluations s'enchaînent dans l'ordre, sans se chevaucher. */
 let evaluationQueue: Promise<void> = Promise.resolve();
@@ -42,9 +47,42 @@ export async function startPlayback(): Promise<void> {
 }
 
 export function stopPlayback(): void {
+  finishRecording();
   stop();
   setPlaying(false);
   updateUi({ isAudioStarting: false });
+}
+
+const RECORD_START_ERROR = "Couldn't start recording in this browser.";
+const EMPTY_RECORDING = "Nothing was recorded.";
+
+/** Arrête l'enregistrement en cours et télécharge le fichier WAV. */
+export function finishRecording(): void {
+  if (getUi().recordingStartedAt === null) return;
+  updateUi({ recordingStartedAt: null });
+  const audio = stopRecording();
+  if (audio === null || (audio.channels[0]?.length ?? 0) === 0) {
+    showNotice(EMPTY_RECORDING);
+    return;
+  }
+  const wav = encodeWav(audio.channels, audio.sampleRate);
+  downloadBlob(`${projectSlug(getProject())}.wav`, new Blob([wav], { type: "audio/wav" }));
+}
+
+/** Enregistre ce qui sort des haut-parleurs ; démarre la lecture si besoin. Un second appel arrête et télécharge. */
+export async function toggleRecording(): Promise<void> {
+  if (getUi().recordingStartedAt !== null) {
+    finishRecording();
+    return;
+  }
+  if (!getPlayback().isPlaying) await startPlayback();
+  if (!getPlayback().isPlaying) return;
+  try {
+    await startRecording(finishRecording);
+    updateUi({ recordingStartedAt: Date.now() });
+  } catch {
+    showNotice(RECORD_START_ERROR);
+  }
 }
 
 export function togglePlayback(): void {

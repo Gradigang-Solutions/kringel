@@ -6,6 +6,13 @@ import { ensureScope } from "@/engine/scope";
 
 export { checkSource, previewNotes } from "@/engine/check";
 export { readMasterLevels } from "@/engine/meter";
+export {
+  isRecording,
+  MAX_RECORDING_SECONDS,
+  startRecording,
+  stopRecording,
+  type RecordedAudio,
+} from "@/engine/recorder";
 export { strudelReplUrl } from "@/engine/replUrl";
 export type { PreviewNote, StereoLevels } from "@/engine/types";
 

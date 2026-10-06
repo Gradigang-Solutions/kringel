@@ -1,4 +1,5 @@
-import { getAudioContext, getSuperdoughAudioController } from "@strudel/webaudio";
+import { getAudioContext } from "@strudel/webaudio";
+import { masterOutput } from "@/engine/masterTap";
 import type { StereoLevels } from "@/engine/types";
 
 const FFT_SIZE = 1024;
@@ -14,7 +15,7 @@ let tap: MeterTap | null = null;
 
 /** Branche deux analyseurs (gauche, droite) sur la sortie de Strudel ; rebranche si la sortie a changé. */
 function ensureTap(): MeterTap | null {
-  const source = getSuperdoughAudioController().output.destinationGain;
+  const source = masterOutput();
   if (source === null) return null;
   if (tap?.source === source) return tap;
   const context = getAudioContext();

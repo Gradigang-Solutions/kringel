@@ -25,12 +25,17 @@ export function serializeProject(project: Project): string {
   return JSON.stringify(projectEnvelope(project), null, JSON_INDENT);
 }
 
-export function projectFileName(project: Project): string {
+/** Nom de fichier tiré du nom du projet : « Night Drive » donne « night-drive ». */
+export function projectSlug(project: Project): string {
   const slug = project.name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  return `${slug === "" ? "project" : slug}.kringel.json`;
+  return slug === "" ? "project" : slug;
+}
+
+export function projectFileName(project: Project): string {
+  return `${projectSlug(project)}.kringel.json`;
 }
 
 function parseJson(text: string): unknown {

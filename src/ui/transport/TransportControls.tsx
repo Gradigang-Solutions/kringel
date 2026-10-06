@@ -5,6 +5,7 @@ import { startPlayback, stopPlayback } from "@/ui/app/playbackController";
 import { IconButton } from "@/ui/primitives/IconButton";
 import { BpmControl } from "@/ui/transport/BpmControl";
 import { CycleDisplay } from "@/ui/transport/CycleDisplay";
+import { RecordButton } from "@/ui/transport/RecordButton";
 
 export function TransportControls() {
   const isPlaying = useIsPlaying();
@@ -36,6 +37,7 @@ export function TransportControls() {
             <Play size={13} fill="currentColor" strokeWidth={0} aria-hidden />
           )}
         </IconButton>
+        <RecordButton />
       </div>
       <BpmControl />
       <div className="max-md:hidden">

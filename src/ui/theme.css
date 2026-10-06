@@ -46,6 +46,7 @@
 
   /* Accents */
   --color-error: oklch(0.7 0.19 25);
+  --color-record: oklch(0.66 0.21 25);
   --color-error-fg: oklch(0.8 0.15 25);
   --color-error-title: oklch(0.82 0.13 25);
   --color-meter-warn: oklch(0.86 0.13 95);

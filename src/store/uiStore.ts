@@ -47,6 +47,8 @@ interface UiStore {
   /** Contrôle survolé, dans l'interface ou via sa ligne de code : les deux côtés le mettent en évidence. */
   readonly highlightedControls: TrackControls | null;
   readonly highlightOrigin: HighlightOrigin | null;
+  /** Début de l'enregistrement en cours (horloge du navigateur, en ms), ou null. */
+  readonly recordingStartedAt: number | null;
 }
 
 export const MAX_CHANGES = 3;
@@ -67,6 +69,7 @@ export const INITIAL_UI: UiStore = {
   historyRevision: 0,
   highlightedControls: null,
   highlightOrigin: null,
+  recordingStartedAt: null,
 };
 
 export const useUiStore = create<UiStore>()(() => INITIAL_UI);
