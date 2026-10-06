@@ -73,7 +73,11 @@ async function createRepl(): Promise<Repl> {
 
 /** À appeler depuis un geste de l'utilisateur : les navigateurs bloquent l'audio avant. */
 export async function initEngine(): Promise<void> {
-  ready ??= createRepl();
+  ready ??= createRepl().catch((error: unknown) => {
+    // Sans cette remise à zéro, une seule panne réseau bloquerait l'audio jusqu'au rechargement.
+    ready = null;
+    throw error;
+  });
   instance = await ready;
   await getAudioContext().resume();
 }

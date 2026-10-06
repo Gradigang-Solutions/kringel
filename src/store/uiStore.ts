@@ -36,6 +36,8 @@ interface UiStore {
   readonly notice: string | null;
   /** Clip dont la conversion en code attend une confirmation. */
   readonly pendingConversionClipId: string | null;
+  /** Premier Play : le contexte audio démarre et les catalogues de samples se téléchargent. */
+  readonly isAudioStarting: boolean;
 }
 
 export const MAX_CHANGES = 3;
@@ -52,6 +54,7 @@ export const INITIAL_UI: UiStore = {
   changes: [],
   notice: null,
   pendingConversionClipId: null,
+  isAudioStarting: false,
 };
 
 export const useUiStore = create<UiStore>()(() => INITIAL_UI);

@@ -1,4 +1,12 @@
-import { checkSource, getCyclePosition, play, setCode, stop, waitForCycle } from "@/engine";
+import {
+  checkSource,
+  getCyclePosition,
+  isEngineReady,
+  play,
+  setCode,
+  stop,
+  waitForCycle,
+} from "@/engine";
 import { recordCodeCheck } from "@/store/actions/code";
 import { launchClip, launchScene } from "@/store/actions/clips";
 import { showNotice } from "@/store/actions/project";
@@ -6,19 +14,37 @@ import { commitQueued, setPlaying } from "@/store/actions/transport";
 import { getPlayback, usePlaybackStore } from "@/store/playbackStore";
 import { getProject, useProjectStore } from "@/store/projectStore";
 import { getGeneratedCode } from "@/store/selectors";
+import { getUi, updateUi } from "@/store/uiStore";
 
 /** Les évaluations s'enchaînent dans l'ordre, sans se chevaucher. */
 let evaluationQueue: Promise<void> = Promise.resolve();
 
+const ENGINE_START_ERROR = "Couldn't start the audio engine. Check your connection and try again.";
+
 export async function startPlayback(): Promise<void> {
-  const error = await play(getGeneratedCode().text);
-  setPlaying(true);
-  showNotice(error);
+  if (getUi().isAudioStarting) return;
+  const isFirstStart = !isEngineReady();
+  if (isFirstStart) updateUi({ isAudioStarting: true });
+  try {
+    const error = await play(getGeneratedCode().text);
+    // Stop pressé pendant le démarrage : la lecture ne doit pas partir quand même.
+    if (isFirstStart && !getUi().isAudioStarting) {
+      stop();
+      return;
+    }
+    setPlaying(true);
+    showNotice(error);
+  } catch {
+    showNotice(ENGINE_START_ERROR);
+  } finally {
+    updateUi({ isAudioStarting: false });
+  }
 }
 
 export function stopPlayback(): void {
   stop();
   setPlaying(false);
+  updateUi({ isAudioStarting: false });
 }
 
 export function togglePlayback(): void {

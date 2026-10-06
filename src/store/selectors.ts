@@ -56,6 +56,10 @@ export function useIsPlaying(): boolean {
   return usePlaybackStore((state) => state.playback.isPlaying);
 }
 
+export function useIsAudioStarting(): boolean {
+  return useUiStore((state) => state.isAudioStarting);
+}
+
 export function useHasAnyClip(): boolean {
   return useProjectStore((state) => hasAnyClip(state.project));
 }

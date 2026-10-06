@@ -1,25 +1,13 @@
 import { useEffect } from "react";
-import { loadProject, showNotice } from "@/store/actions/project";
+import { showNotice } from "@/store/actions/project";
 import { markSaved, useProjectStore } from "@/store/projectStore";
-import { loadLastProject, saveProject } from "@/storage/db";
-import { checkAllCodeClips } from "@/ui/app/playbackController";
+import { saveProject } from "@/storage/db";
 
 const AUTOSAVE_DELAY_MS = 600;
 
-/** Recharge le dernier projet au démarrage, puis sauvegarde chaque modification après un court délai. */
+/** Sauvegarde chaque modification du projet après un court délai. */
 export function useProjectPersistence(): void {
   useEffect(() => {
-    void loadLastProject()
-      .then(async (project) => {
-        if (project) {
-          loadProject(project, "saved");
-          await checkAllCodeClips();
-        }
-      })
-      .catch(() => {
-        showNotice("Couldn't open your last project from this browser's storage.");
-      });
-
     let timer: ReturnType<typeof setTimeout> | undefined;
     const unsubscribe = useProjectStore.subscribe((state, previous) => {
       if (state.project === previous.project || state.saveStatus !== "pending") return;
