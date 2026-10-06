@@ -183,6 +183,81 @@ describe("clip de pas", () => {
     `);
   });
 
+  it("écrit la probabilité d'un pas avec ?", () => {
+    const chances = Array.from({ length: 16 }, (_, step) => (step === 2 ? 0.7 : 1));
+    const clip = makeStepsClip({
+      rows: [makeRow("bd", [0, 4, 8, 12]), makeRow("hh", [2, 6, 10, 14], { chances })],
+    });
+    expect(render(clip)).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("bd*4, ~ hh?0.3 ~ hh ~ hh ~ hh")
+          .bank("RolandTR909")
+      )"
+    `);
+  });
+
+  it("écrit un ratchet dans son pas, sans réduire la grille", () => {
+    const ratchets = Array.from({ length: 16 }, (_, step) => (step === 12 ? 2 : 1));
+    const clip = makeStepsClip({ rows: [makeRow("sd", [4, 12], { ratchets })] });
+    expect(render(clip)).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("~ ~ ~ ~ sd ~@7 sd*2 ~ ~ ~")
+          .bank("RolandTR909")
+      )"
+    `);
+  });
+
+  it("combine ratchet, probabilité et vélocité sur le même rythme", () => {
+    const ratchets = Array.from({ length: 16 }, (_, step) => (step === 0 ? 3 : 1));
+    const chances = Array.from({ length: 16 }, (_, step) => (step === 0 ? 0.5 : 1));
+    const clip = makeStepsClip({
+      rows: [makeRow("hh", [0, 8], { velocity: 0.6, ratchets, chances })],
+    });
+    expect(render(clip)).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("hh*3?0.5 ~@7 hh ~@7").velocity(0.6)
+          .bank("RolandTR909")
+      )"
+    `);
+  });
+
+  it("ne répète pas avec * des pas qui portent une probabilité", () => {
+    const clip = makeStepsClip({
+      rows: [makeRow("hh", [0, 4, 8, 12], { chances: Array.from({ length: 16 }, () => 0.5) })],
+    });
+    expect(render(clip)).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("hh?0.5 hh?0.5 hh?0.5 hh?0.5")
+          .bank("RolandTR909")
+      )"
+    `);
+  });
+
+  it("ajoute le swing au clip", () => {
+    expect(render(makeStepsClip({ swing: 0.33 }))).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("bd*4")
+          .bank("RolandTR909")
+          .swingBy(0.33, 8)
+      )"
+    `);
+  });
+
   it("n'écrit rien pour un clip sans pas", () => {
     expect(render(makeStepsClip({ rows: [makeRow("bd", [])] }))).toMatchInlineSnapshot(`
       "setcpm(120/4)

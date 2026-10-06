@@ -1,5 +1,12 @@
 import { z } from "zod";
-import { CLIP_CYCLE_OPTIONS, SCALE_MODES, SOUND_SOURCES } from "@/model/constants";
+import {
+  CLIP_CYCLE_OPTIONS,
+  RATCHET_RANGE,
+  SCALE_MODES,
+  SOUND_SOURCES,
+  SWING_RANGE,
+} from "@/model/constants";
+import { createStepRow } from "@/model/steps";
 import type { ClipCycles, ClipKind, Project, ScaleModeId } from "@/model/types";
 
 const SCALE_MODE_IDS: readonly string[] = SCALE_MODES.map((mode) => mode.id);
@@ -15,12 +22,25 @@ const scaleSchema = z.custom<ScaleModeId>(
   "Unknown scale",
 );
 
-const stepRowSchema = z.object({
-  id: z.string(),
-  sound: z.string(),
-  isMuted: z.boolean(),
-  velocities: z.array(z.number().min(0).max(1)),
-});
+const stepRowSchema = z
+  .object({
+    id: z.string(),
+    sound: z.string(),
+    isMuted: z.boolean(),
+    velocities: z.array(z.number().min(0).max(1)),
+    // Absents des projets enregistrés avant le groove : chaque pas joue alors à coup sûr, une fois.
+    chances: z.array(z.number().min(0).max(1)).optional(),
+    ratchets: z.array(z.number().int().min(RATCHET_RANGE.min).max(RATCHET_RANGE.max)).optional(),
+  })
+  .transform(({ chances, ratchets, ...row }) => {
+    const defaults = createStepRow(row.id, row.sound, row.velocities);
+    return {
+      ...defaults,
+      isMuted: row.isMuted,
+      chances: chances ?? defaults.chances,
+      ratchets: ratchets ?? defaults.ratchets,
+    };
+  });
 
 const noteSchema = z.object({
   id: z.string(),
@@ -37,6 +57,7 @@ const clipSchema = z.discriminatedUnion("kind", [
     name: z.string(),
     kit: z.string(),
     cycles: cyclesSchema,
+    swing: z.number().min(SWING_RANGE.min).max(SWING_RANGE.max).default(SWING_RANGE.min),
     rows: z.array(stepRowSchema),
   }),
   z.object({

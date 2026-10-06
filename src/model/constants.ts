@@ -52,6 +52,15 @@ export const ROOM_RANGE = { min: 0, max: 1 } as const;
 
 export const DEFAULT_VELOCITY = 1;
 export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const;
+export const DEFAULT_CHANCE = 1;
+export const CHANCE_RANGE = { min: 0.05, max: 1, step: 0.05 } as const;
+export const DEFAULT_RATCHET = 1;
+export const RATCHET_RANGE = { min: 1, max: 4 } as const;
+
+/** Au-delà d'un demi-pas de retard, le contretemps rejoint le pas suivant. */
+export const SWING_RANGE = { min: 0, max: 0.5 } as const;
+/** Le swing travaille par paires de pas : le second de chaque paire est retardé. */
+export const SWING_SLICES_PER_CYCLE = STEPS_PER_CYCLE / 2;
 
 export const DRUM_KITS = [
   {

@@ -1,5 +1,6 @@
 import { quote } from "@/codegen/format";
-import { stepRowMini } from "@/codegen/steps";
+import { assertNever } from "@/lib/assertNever";
+import { stepRowMini, swingCall } from "@/codegen/steps";
 import { DRUM_SOUND_NAMES } from "@/model/constants";
 import { findClip, isClipOfKind, updateClipOfKind } from "@/model/project";
 import {
@@ -7,8 +8,12 @@ import {
   isStepOn,
   removeStepRow as removeStepRowModel,
   setKit as setKitModel,
+  setStepChance as setStepChanceModel,
+  setStepRatchet as setStepRatchetModel,
   setStepVelocity as setStepVelocityModel,
   setStepsCycles,
+  setSwing as setSwingModel,
+  type StepLane,
   toggleRowMute as toggleRowMuteModel,
   toggleStep as toggleStepModel,
 } from "@/model/steps";
@@ -54,29 +59,66 @@ export function toggleStep(clipId: string, rowId: string, step: number): void {
   });
 }
 
-export function setStepVelocity(
+const PERCENT = 100;
+
+/** Valeur d'un réglage par pas, telle qu'affichée : « 0.55 », « 70% », « ×3 ». */
+export function formatStepValue(lane: StepLane, value: number): string {
+  switch (lane) {
+    case "velocities":
+      return value.toFixed(2);
+    case "chances":
+      return `${Math.round(value * PERCENT)}%`;
+    case "ratchets":
+      return `×${value}`;
+    default:
+      return assertNever(lane);
+  }
+}
+
+type StepValueSetter = (clip: StepsClip, rowId: string, step: number, value: number) => StepsClip;
+
+const STEP_VALUE_SETTERS: Readonly<Record<StepLane, StepValueSetter>> = {
+  velocities: setStepVelocityModel,
+  chances: setStepChanceModel,
+  ratchets: setStepRatchetModel,
+};
+
+const STEP_VALUE_LABELS: Readonly<Record<StepLane, string>> = {
+  velocities: "velocity",
+  chances: "chance",
+  ratchets: "ratchet",
+};
+
+/** La vélocité a son appel ; probabilité et ratchet s'écrivent dans la mini-notation de la ligne. */
+function stepValueCode(lane: StepLane, row: StepRow, cycles: number): string {
+  return lane === "velocities" ? ".velocity(…)" : quote(stepRowMini(row, cycles));
+}
+
+/** Règle la vélocité, la probabilité ou le ratchet d'un pas. */
+export function setStepValue(
+  lane: StepLane,
   clipId: string,
   rowId: string,
   step: number,
-  velocity: number,
+  value: number,
 ): void {
-  const before = stepsContext(clipId, rowId)?.row.velocities[step] ?? 0;
-  // Une clé par clip : un tracé de vélocité sur plusieurs pas s'annule en une fois.
+  const before = stepsContext(clipId, rowId)?.row[lane][step] ?? 0;
+  // Une clé par clip et par réglage : un tracé sur plusieurs pas s'annule en une fois.
   updateSteps(
     clipId,
-    (clip) => setStepVelocityModel(clip, rowId, step, velocity),
-    `velocity:${clipId}`,
+    (clip) => STEP_VALUE_SETTERS[lane](clip, rowId, step, value),
+    `${lane}:${clipId}`,
   );
   const context = stepsContext(clipId, rowId);
   if (!context) return;
-  const after = context.row.velocities[step] ?? 0;
+  const after = context.row[lane][step] ?? 0;
   logValueChange({
-    key: `velocity:${rowId}:${step}`,
+    key: `${lane}:${rowId}:${step}`,
     trackId: context.trackId,
-    label: `${soundName(context.row.sound)} step ${step + 1} velocity`,
-    from: before.toFixed(2),
-    to: after.toFixed(2),
-    code: ".velocity(…)",
+    label: `${soundName(context.row.sound)} step ${step + 1} ${STEP_VALUE_LABELS[lane]}`,
+    from: formatStepValue(lane, before),
+    to: formatStepValue(lane, after),
+    code: stepValueCode(lane, context.row, context.clip.cycles),
   });
 }
 
@@ -136,4 +178,25 @@ export function setKit(clipId: string, kit: string): void {
 
 export function setStepsLength(clipId: string, cycles: ClipCycles): void {
   updateSteps(clipId, (clip) => setStepsCycles(clip, cycles));
+}
+
+export function setSwing(clipId: string, swing: number): void {
+  const located = findClip(getProject(), clipId);
+  const before = located && isClipOfKind(located.clip, "steps") ? located.clip.swing : 0;
+  updateSteps(clipId, (clip) => setSwingModel(clip, swing), `swing:${clipId}`);
+  const after = findClip(getProject(), clipId);
+  if (!after || !isClipOfKind(after.clip, "steps")) return;
+  logValueChange({
+    key: `swing:${clipId}`,
+    trackId: after.track.id,
+    label: "Swing",
+    from: formatSwing(before),
+    to: formatSwing(after.clip.swing),
+    code: swingCall(after.clip.swing) ?? "no swing",
+  });
+}
+
+/** Retard du contretemps en pourcentage d'un pas. */
+export function formatSwing(swing: number): string {
+  return `${Math.round(swing * PERCENT)}%`;
 }

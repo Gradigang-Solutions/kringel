@@ -23,6 +23,10 @@ export interface StepRow {
   readonly isMuted: boolean;
   /** Une vélocité par pas, sur toute la longueur du clip ; 0 = pas éteint. */
   readonly velocities: readonly number[];
+  /** Probabilité que chaque pas allumé joue, de 0 à 1 ; 1 = toujours. */
+  readonly chances: readonly number[];
+  /** Nombre de coups joués dans chaque pas allumé (ratchet) ; 1 = un seul coup. */
+  readonly ratchets: readonly number[];
 }
 
 export interface Note {
@@ -40,6 +44,8 @@ export interface StepsClip {
   readonly name: string;
   readonly kit: string;
   readonly cycles: ClipCycles;
+  /** Retard des doubles-croches à contretemps, en fraction de pas ; 0 = droit. */
+  readonly swing: number;
   readonly rows: readonly StepRow[];
 }
 

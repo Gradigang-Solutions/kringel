@@ -7,6 +7,7 @@ import { SegmentedControl } from "@/ui/primitives/SegmentedControl";
 import { Select } from "@/ui/primitives/Select";
 import { cycleOptions, parseCycles } from "@/ui/editors/cycleOptions";
 import { EditorToolbar } from "@/ui/editors/EditorToolbar";
+import { SwingControl } from "@/ui/editors/steps/SwingControl";
 
 export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
   const steps = stepCount(clip.cycles);
@@ -37,6 +38,7 @@ export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
           {steps} steps · {clip.cycles} {clip.cycles === 1 ? "cycle" : "cycles"}
         </span>
       </div>
+      <SwingControl clip={clip} />
     </EditorToolbar>
   );
 }

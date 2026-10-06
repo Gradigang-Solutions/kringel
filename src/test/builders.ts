@@ -1,6 +1,7 @@
 import { MIXER_DEFAULTS, STEPS_PER_CYCLE } from "@/model/constants";
 import { INITIAL_PLAYBACK, type PlaybackState } from "@/model/playback";
 import { createProject, setSlot } from "@/model/project";
+import { createStepRow } from "@/model/steps";
 import type {
   Clip,
   CodeClip,
@@ -57,6 +58,8 @@ interface RowOptions {
   readonly velocities?: readonly number[];
   readonly isMuted?: boolean;
   readonly length?: number;
+  readonly chances?: readonly number[];
+  readonly ratchets?: readonly number[];
 }
 
 export function makeRow(
@@ -68,7 +71,12 @@ export function makeRow(
   const velocities =
     options.velocities ??
     Array.from({ length }, (_, step) => (onSteps.includes(step) ? (options.velocity ?? 1) : 0));
-  return { id: `row-${sound}`, sound, isMuted: options.isMuted ?? false, velocities };
+  return {
+    ...createStepRow(`row-${sound}`, sound, velocities),
+    isMuted: options.isMuted ?? false,
+    ...(options.chances ? { chances: options.chances } : {}),
+    ...(options.ratchets ? { ratchets: options.ratchets } : {}),
+  };
 }
 
 export function makeStepsClip(overrides: Partial<StepsClip> = {}): StepsClip {
@@ -78,6 +86,7 @@ export function makeStepsClip(overrides: Partial<StepsClip> = {}): StepsClip {
     name: "Four on the floor",
     kit: "RolandTR909",
     cycles: 1,
+    swing: 0,
     rows: [makeRow("bd", [0, 4, 8, 12])],
     ...overrides,
   };

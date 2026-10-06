@@ -5,6 +5,7 @@ import {
   STEPS_PER_CYCLE,
   TRACK_PRESETS,
 } from "@/model/constants";
+import { createStepRow } from "@/model/steps";
 import type {
   Clip,
   ClipCycles,
@@ -37,6 +38,7 @@ export function stepsClip(
   options: {
     readonly cycles?: ClipCycles;
     readonly velocities?: Readonly<Record<string, number>>;
+    readonly swing?: number;
   } = {},
 ): StepsClip {
   const cycles = options.cycles ?? 1;
@@ -47,14 +49,16 @@ export function stepsClip(
     name,
     kit,
     cycles,
-    rows: Object.entries(rows).map(([sound, steps]) => ({
-      id: nextId(),
-      sound,
-      isMuted: false,
-      velocities: Array.from({ length }, (_, step) =>
-        steps.includes(step) ? (options.velocities?.[sound] ?? 1) : 0,
+    swing: options.swing ?? 0,
+    rows: Object.entries(rows).map(([sound, steps]) =>
+      createStepRow(
+        nextId(),
+        sound,
+        Array.from({ length }, (_, step) =>
+          steps.includes(step) ? (options.velocities?.[sound] ?? 1) : 0,
+        ),
       ),
-    })),
+    ),
   };
 }
 

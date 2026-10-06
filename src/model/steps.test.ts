@@ -4,8 +4,11 @@ import {
   isStepOn,
   removeStepRow,
   setKit,
+  setStepChance,
+  setStepRatchet,
   setStepVelocity,
   setStepsCycles,
+  setSwing,
   toggleRowMute,
   toggleStep,
 } from "@/model/steps";
@@ -72,5 +75,48 @@ describe("setStepsCycles", () => {
   it("coupe le motif pour raccourcir le clip", () => {
     const longer = toggleStep(setStepsCycles(clip, 2), "row-bd", 30);
     expect(setStepsCycles(longer, 1).rows[0]!.velocities).toHaveLength(16);
+  });
+});
+
+describe("groove par pas", () => {
+  it("arrondit la probabilité au cran de 5 % et la borne", () => {
+    expect(setStepChance(clip, "row-bd", 0, 0.42).rows[0]!.chances[0]).toBe(0.4);
+    expect(setStepChance(clip, "row-bd", 0, 0).rows[0]!.chances[0]).toBe(0.05);
+    expect(setStepChance(clip, "row-bd", 0, 2).rows[0]!.chances[0]).toBe(1);
+  });
+
+  it("borne le ratchet à un nombre entier de coups", () => {
+    expect(setStepRatchet(clip, "row-bd", 0, 2.6).rows[0]!.ratchets[0]).toBe(3);
+    expect(setStepRatchet(clip, "row-bd", 0, 9).rows[0]!.ratchets[0]).toBe(4);
+    expect(setStepRatchet(clip, "row-bd", 0, 0).rows[0]!.ratchets[0]).toBe(1);
+  });
+
+  it("remet probabilité et ratchet par défaut quand un pas se rallume", () => {
+    const tweaked = setStepRatchet(setStepChance(clip, "row-bd", 0, 0.5), "row-bd", 0, 3);
+    const relit = toggleStep(toggleStep(tweaked, "row-bd", 0), "row-bd", 0);
+    expect(relit.rows[0]).toMatchObject({ velocities: clip.rows[0]!.velocities });
+    expect(relit.rows[0]!.chances[0]).toBe(1);
+    expect(relit.rows[0]!.ratchets[0]).toBe(1);
+  });
+
+  it("garde probabilité et ratchet quand seule la vélocité change", () => {
+    const tweaked = setStepChance(clip, "row-bd", 0, 0.5);
+    expect(setStepVelocity(tweaked, "row-bd", 0, 0.7).rows[0]!.chances[0]).toBe(0.5);
+  });
+
+  it("répète probabilités et ratchets avec le motif quand le clip s'allonge", () => {
+    const tweaked = setStepRatchet(setStepChance(clip, "row-bd", 4, 0.5), "row-bd", 4, 2);
+    const longer = setStepsCycles(tweaked, 2).rows[0]!;
+    expect(longer.chances).toHaveLength(32);
+    expect(longer.chances[20]).toBe(0.5);
+    expect(longer.ratchets[20]).toBe(2);
+  });
+});
+
+describe("setSwing", () => {
+  it("borne et arrondit le swing", () => {
+    expect(setSwing(clip, 0.333).swing).toBe(0.33);
+    expect(setSwing(clip, 2).swing).toBe(0.5);
+    expect(setSwing(clip, -1).swing).toBe(0);
   });
 });

@@ -56,6 +56,11 @@ function renderSlot(slot: Slot): string {
   return slot.weight === 1 ? slot.token : `${slot.token}@${slot.weight}`;
 }
 
+/** Un jeton qui porte déjà un opérateur (« hh*2 », « hh?0.5 ») se lirait mal répété : « hh?0.5*4 ». */
+function hasOperator(token: string): boolean {
+  return token.includes("*") || token.includes("?");
+}
+
 /** « bd bd bd bd » devient « bd*4 ». */
 function isRepetition(slots: readonly Slot[]): boolean {
   const [first] = slots;
@@ -63,6 +68,7 @@ function isRepetition(slots: readonly Slot[]): boolean {
     first !== undefined &&
     slots.length > 1 &&
     first.token !== REST &&
+    !hasOperator(first.token) &&
     slots.every((slot) => slot.weight === 1 && slot.token === first.token)
   );
 }

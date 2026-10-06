@@ -53,8 +53,8 @@ export function stepCellAt(layout: StepGridLayout, x: number, y: number): StepCe
   return step === null || row === null ? null : { row, step };
 }
 
-/** Vélocité correspondant à une hauteur dans la piste de vélocité : en haut 1, en bas 0. */
-export function velocityAtHeight(y: number, height: number): number {
+/** Niveau correspondant à une hauteur dans la piste des réglages par pas : en haut 1, en bas 0. */
+export function levelAtHeight(y: number, height: number): number {
   if (height <= 0) return 0;
   return 1 - Math.min(1, Math.max(0, y / height));
 }

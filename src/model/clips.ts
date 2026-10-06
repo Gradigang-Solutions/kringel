@@ -3,9 +3,11 @@ import {
   DEFAULT_DRUM_SOUNDS,
   DEFAULT_KIT,
   STEPS_PER_CYCLE,
+  SWING_RANGE,
   SYNTH_SOUNDS,
 } from "@/model/constants";
 import { findClip, findTrack, setSlot } from "@/model/project";
+import { createStepRow } from "@/model/steps";
 import type {
   Clip,
   ClipKind,
@@ -34,12 +36,14 @@ export function createStepsClip(nextId: IdGenerator, name: string): StepsClip {
     name,
     kit: DEFAULT_KIT,
     cycles: DEFAULT_CYCLES,
-    rows: DEFAULT_DRUM_SOUNDS.map((sound) => ({
-      id: nextId(),
-      sound,
-      isMuted: false,
-      velocities: Array.from({ length: STEPS_PER_CYCLE }, () => 0),
-    })),
+    swing: SWING_RANGE.min,
+    rows: DEFAULT_DRUM_SOUNDS.map((sound) =>
+      createStepRow(
+        nextId(),
+        sound,
+        Array.from({ length: STEPS_PER_CYCLE }, () => 0),
+      ),
+    ),
   };
 }
 

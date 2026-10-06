@@ -14,7 +14,7 @@ import {
 } from "@/ui/editors/steps/stepGeometry";
 import { StepRowLabel } from "@/ui/editors/steps/StepRowLabel";
 import { StepsToolbar } from "@/ui/editors/steps/StepsToolbar";
-import { VelocityLane } from "@/ui/editors/steps/VelocityLane";
+import { StepLane } from "@/ui/editors/steps/StepLane";
 import { useClipPlayhead } from "@/ui/editors/useClipPlayhead";
 import { stepCount } from "@/model/timing";
 
@@ -88,7 +88,7 @@ export function StepsEditor({ clip, trackId }: StepsEditorProps) {
           </div>
           <AddSoundRow clip={clip} />
           {selectedRow ? (
-            <VelocityLane
+            <StepLane
               clipId={clip.id}
               row={selectedRow}
               trackColor={trackColor}

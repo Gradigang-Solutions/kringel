@@ -5,7 +5,7 @@ import {
   stepGridHeight,
   stepGridLayout,
   stepGridMinWidth,
-  velocityAtHeight,
+  levelAtHeight,
 } from "@/ui/editors/steps/stepGeometry";
 
 describe("stepGridLayout", () => {
@@ -30,12 +30,12 @@ describe("stepGridLayout", () => {
   });
 });
 
-describe("velocityAtHeight", () => {
+describe("levelAtHeight", () => {
   it("convertit une hauteur en vélocité", () => {
-    expect(velocityAtHeight(0, 60)).toBe(1);
-    expect(velocityAtHeight(45, 60)).toBe(0.25);
-    expect(velocityAtHeight(80, 60)).toBe(0);
-    expect(velocityAtHeight(10, 0)).toBe(0);
+    expect(levelAtHeight(0, 60)).toBe(1);
+    expect(levelAtHeight(45, 60)).toBe(0.25);
+    expect(levelAtHeight(80, 60)).toBe(0);
+    expect(levelAtHeight(10, 0)).toBe(0);
   });
 });
 
