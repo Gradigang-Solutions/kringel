@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { groupedSpans, nearestSpanIndex, spanIndexAt } from "@/ui/shared/canvas/gridGeometry";
+import {
+  groupedGapsLength,
+  groupedSpans,
+  nearestSpanIndex,
+  spanIndexAt,
+} from "@/ui/shared/canvas/gridGeometry";
 
 const spacing = { groupSize: 4, cellGap: 4, groupGap: 10 };
 
@@ -19,6 +24,17 @@ describe("groupedSpans", () => {
       size: 25,
     });
     expect(groupedSpans(100, 0, spacing)).toEqual([]);
+  });
+});
+
+describe("groupedGapsLength", () => {
+  it("additionne les petits écarts et ceux entre groupes", () => {
+    expect(groupedGapsLength(8, spacing)).toBe(34);
+    expect(groupedGapsLength(3, spacing)).toBe(8);
+  });
+
+  it("vaut zéro sans cellule", () => {
+    expect(groupedGapsLength(0, spacing)).toBe(0);
   });
 });
 

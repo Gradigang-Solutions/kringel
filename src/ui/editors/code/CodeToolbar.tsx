@@ -4,6 +4,7 @@ import { useUiStore } from "@/store/uiStore";
 import { Badge } from "@/ui/primitives/Badge";
 import { Button } from "@/ui/primitives/Button";
 import { Switch } from "@/ui/primitives/Switch";
+import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 
 export interface CodeToolbarProps {
   readonly hasError: boolean;
@@ -14,11 +15,11 @@ export interface CodeToolbarProps {
 export function CodeToolbar({ hasError, isPlayingLastValid, onRun }: CodeToolbarProps) {
   const isRunAsYouType = useUiStore((state) => state.isRunAsYouType);
   return (
-    <div className="flex h-10 shrink-0 items-center gap-5.5 border-b border-gray-225 px-4">
+    <EditorToolbar>
       <Switch isChecked={isRunAsYouType} onChange={setRunAsYouType} label="Run as I type" />
       <Button onClick={onRun} className="gap-2">
         Run
-        <span className="font-mono text-caption text-fg-3">⌘↵</span>
+        <span className="font-mono text-caption text-fg-3 max-md:hidden">⌘↵</span>
       </Button>
       {hasError ? (
         <Badge variant="error">
@@ -32,6 +33,6 @@ export function CodeToolbar({ hasError, isPlayingLastValid, onRun }: CodeToolbar
           Still playing the last valid version
         </span>
       ) : null}
-    </div>
+    </EditorToolbar>
   );
 }

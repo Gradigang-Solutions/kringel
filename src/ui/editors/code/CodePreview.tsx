@@ -48,7 +48,7 @@ export function CodePreview({ source, isStale, trackColor, playhead }: CodePrevi
   );
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-2.5 px-4 pt-3 pb-3.5">
+    <div className="flex min-w-0 flex-1 flex-col gap-2.5 px-4 pt-3 pb-3.5 max-md:h-40 max-md:flex-none">
       <div className="flex items-center gap-2">
         <span className="text-body font-semibold">Result</span>
         <Badge>read-only</Badge>

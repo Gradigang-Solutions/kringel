@@ -16,13 +16,13 @@ export function DemoProjects() {
   return (
     <section
       aria-label="Demo projects"
-      className="mx-3 mt-3.5 flex min-h-0 flex-1 flex-col gap-3 border-t border-gray-225 pt-4.5 pb-3.5"
+      className="mx-3 mt-3.5 flex min-h-0 flex-1 flex-col gap-3 border-t border-gray-225 pt-4.5 pb-3.5 max-md:flex-none"
     >
-      <div className="flex items-baseline gap-2.5">
+      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
         <h2 className="text-title font-semibold">Or open a demo project</h2>
         <span className="text-body text-fg-3">Working songs you can take apart, clip by clip.</span>
       </div>
-      <div className="grid min-h-0 flex-1 grid-cols-4 gap-2.5">
+      <div className="grid min-h-0 flex-1 grid-cols-4 gap-2.5 max-md:grid-cols-1">
         {DEMOS.map((demo) => (
           <DemoCard key={demo.project.id} demo={demo} onOpen={() => openDemo(demo)} />
         ))}

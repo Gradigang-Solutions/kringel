@@ -32,8 +32,8 @@ export function CodeClipEditor({ clip, trackId }: CodeClipEditorProps) {
         isPlayingLastValid={isStale && lastValidSource !== null && playhead.isAnimated}
         onRun={run}
       />
-      <div className="flex min-h-0 flex-1">
-        <div className="flex min-w-0 flex-code-editor flex-col border-r border-gray-235 bg-gray-145">
+      <div className="flex min-h-0 flex-1 max-md:flex-col">
+        <div className="flex min-w-0 flex-code-editor flex-col border-r border-gray-235 bg-gray-145 max-md:border-r-0 max-md:border-b">
           <div className="min-h-0 flex-1">
             <EditableCode
               source={clip.source}

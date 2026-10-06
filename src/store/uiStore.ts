@@ -20,12 +20,16 @@ export interface ValueChange {
   readonly code: string;
 }
 
+/** Vue affichée sur téléphone, où la grille, le mixer et le code ne tiennent pas ensemble. */
+export type PhoneTab = "clips" | "mixer" | "code";
+
 interface UiStore {
   readonly selectedClipId: string | null;
   readonly editorClipId: string | null;
   readonly selectedRowId: string | null;
   readonly selectedNoteId: string | null;
   readonly isCodePanelOpen: boolean;
+  readonly phoneTab: PhoneTab;
   readonly isRunAsYouType: boolean;
   readonly isOutOfScaleGrayed: boolean;
   readonly changes: readonly ChangeEntry[];
@@ -42,6 +46,7 @@ export const INITIAL_UI: UiStore = {
   selectedRowId: null,
   selectedNoteId: null,
   isCodePanelOpen: true,
+  phoneTab: "clips",
   isRunAsYouType: true,
   isOutOfScaleGrayed: true,
   changes: [],

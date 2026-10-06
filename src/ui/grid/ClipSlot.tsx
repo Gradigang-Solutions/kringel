@@ -18,6 +18,7 @@ import { launchClipAndPlay } from "@/ui/app/playbackController";
 import { ClipSlotEmpty } from "@/ui/grid/ClipSlotEmpty";
 import { ClipSlotFilled } from "@/ui/grid/ClipSlotFilled";
 import { ContextMenuArea, type MenuItem } from "@/ui/primitives/Menu";
+import { useIsPhone } from "@/ui/shared/useIsPhone";
 
 const KIND_MENU_LABELS: Readonly<Record<ClipKind, string>> = {
   steps: "New step sequence",
@@ -48,6 +49,7 @@ export function ClipSlot({ address, trackIndex, isCompact, isInvite }: ClipSlotP
   );
   const isSelected = useUiStore((state) => clip !== null && state.selectedClipId === clip.id);
   const isTransportRunning = useIsPlaying();
+  const isPhone = useIsPhone();
 
   if (!clip) {
     const createItems: MenuItem[] = (["steps", "notes", "code"] as const).map((kind) => ({
@@ -84,7 +86,8 @@ export function ClipSlot({ address, trackIndex, isCompact, isInvite }: ClipSlotP
         isTransportRunning={isTransportRunning}
         isSelected={isSelected}
         isCompact={isCompact}
-        onSelect={() => selectClip(clip.id)}
+        // Au doigt, le double-tap n'est pas fiable : un tap ouvre directement l'éditeur.
+        onSelect={() => (isPhone ? openEditor(clip.id) : selectClip(clip.id))}
         onOpen={() => openEditor(clip.id)}
         onLaunch={() => launchClipAndPlay(address.trackId, clip.id)}
         onStop={() => stopTrack(address.trackId)}

@@ -19,8 +19,10 @@ export function TrackHeader({ name, color, rootCall, onStop }: TrackHeaderProps)
     >
       <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-track" />
       <TrackSwatch />
-      <span className="text-body font-semibold">{name}</span>
-      {rootCall ? <span className="font-mono text-caption text-fg-3">{rootCall}</span> : null}
+      <span className="truncate text-body font-semibold">{name}</span>
+      {rootCall ? (
+        <span className="font-mono text-caption text-fg-3 max-md:hidden">{rootCall}</span>
+      ) : null}
       <span className="flex-1" />
       <IconButton label={`Stop ${name}`} variant="ghost" size="sm" onClick={onStop}>
         <Square size={8} fill="currentColor" strokeWidth={0} aria-hidden />

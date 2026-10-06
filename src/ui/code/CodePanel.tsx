@@ -50,14 +50,19 @@ export function CodePanel() {
   return (
     <aside
       aria-label="Strudel code"
-      className="flex min-h-0 w-100 shrink-0 flex-col border-l border-gray-235 bg-gray-135"
+      className="flex min-h-0 w-100 shrink-0 flex-col border-l border-gray-235 bg-gray-135 max-md:w-full max-md:flex-1 max-md:border-l-0"
     >
       <div className="flex h-11 shrink-0 items-center gap-2 border-b border-gray-215 pr-2.5 pl-4">
         <h2 className="text-emphasis font-semibold">Strudel code</h2>
         <Badge>read-only</Badge>
         <span className="flex-1" />
         <CopyButton text={code.text} />
-        <IconButton label="Hide code panel" size="sm" onClick={() => setCodePanelOpen(false)}>
+        <IconButton
+          label="Hide code panel"
+          size="sm"
+          onClick={() => setCodePanelOpen(false)}
+          className="max-md:hidden"
+        >
           <ChevronsRight size={14} aria-hidden />
         </IconButton>
       </div>

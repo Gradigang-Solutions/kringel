@@ -6,11 +6,12 @@ import { setKit, setStepsLength } from "@/store/actions/steps";
 import { SegmentedControl } from "@/ui/primitives/SegmentedControl";
 import { Select } from "@/ui/primitives/Select";
 import { cycleOptions, parseCycles } from "@/ui/editors/cycleOptions";
+import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 
 export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
   const steps = stepCount(clip.cycles);
   return (
-    <div className="flex h-10 shrink-0 items-center gap-5.5 border-b border-gray-225 px-4">
+    <EditorToolbar>
       <div className="flex items-center gap-2">
         <span className="text-label text-fg-3">Kit</span>
         <Select
@@ -36,6 +37,6 @@ export function StepsToolbar({ clip }: { readonly clip: StepsClip }) {
           {steps} steps · {clip.cycles} {clip.cycles === 1 ? "cycle" : "cycles"}
         </span>
       </div>
-    </div>
+    </EditorToolbar>
   );
 }

@@ -1,20 +1,30 @@
+import { Trash2 } from "lucide-react";
 import { PITCH_CLASS_NAMES, SCALE_MODES, SOUND_SOURCES } from "@/model/constants";
 import { soundsForSource } from "@/model/notes";
 import type { NotesClip, SoundSource } from "@/model/types";
-import { setNotesLength, setOutOfScaleGrayed, setScale, setSound } from "@/store/actions/notes";
+import {
+  deleteNote,
+  setNotesLength,
+  setOutOfScaleGrayed,
+  setScale,
+  setSound,
+} from "@/store/actions/notes";
 import { useUiStore } from "@/store/uiStore";
 import { cycleOptions, parseCycles } from "@/ui/editors/cycleOptions";
 import { SegmentedControl } from "@/ui/primitives/SegmentedControl";
 import { Select } from "@/ui/primitives/Select";
+import { IconButton } from "@/ui/primitives/IconButton";
 import { Switch } from "@/ui/primitives/Switch";
+import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 
 const SOURCE_LABELS: Readonly<Record<SoundSource, string>> = { synth: "Synth", sample: "Sample" };
 const LABEL = "text-label text-fg-3";
 
 export function PianoToolbar({ clip }: { readonly clip: NotesClip }) {
   const isOutOfScaleGrayed = useUiStore((state) => state.isOutOfScaleGrayed);
+  const selectedNoteId = useUiStore((state) => state.selectedNoteId);
   return (
-    <div className="flex h-10 shrink-0 items-center gap-5.5 border-b border-gray-225 px-4">
+    <EditorToolbar>
       <div className="flex items-center gap-2">
         <span className={LABEL}>Scale</span>
         <Select
@@ -74,6 +84,17 @@ export function PianoToolbar({ clip }: { readonly clip: NotesClip }) {
         />
         <span className="text-label whitespace-nowrap text-fg-3">cycles</span>
       </div>
-    </div>
+      {/* Au doigt, ni touche Suppr ni double-clic fiable : un bouton supprime la note sélectionnée. */}
+      {selectedNoteId === null ? null : (
+        <IconButton
+          label="Delete note"
+          size="sm"
+          onClick={() => deleteNote(clip.id, selectedNoteId)}
+          className="md:hidden"
+        >
+          <Trash2 size={14} aria-hidden />
+        </IconButton>
+      )}
+    </EditorToolbar>
   );
 }

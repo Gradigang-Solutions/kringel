@@ -1,3 +1,4 @@
+import { cva } from "class-variance-authority";
 import type { ClipKind } from "@/model/types";
 import { createClip } from "@/store/actions/clips";
 import { useProjectStore } from "@/store/projectStore";
@@ -69,24 +70,65 @@ function StartCard({ option }: { readonly option: StartOption }) {
   );
 }
 
-/** Premier lancement : invitation à créer un clip, par-dessus la grille vide. */
-export function EmptyStateCard() {
+type EmptyStateLayout = "overlay" | "inline";
+
+const wrapperVariants = cva("", {
+  variants: {
+    layout: {
+      overlay: "pointer-events-none absolute inset-0 flex items-center justify-center pl-30",
+      inline: "px-3 pt-3",
+    },
+  },
+});
+
+const cardVariants = cva("flex flex-col rounded-12 border border-gray-280", {
+  variants: {
+    layout: {
+      overlay: "pointer-events-auto w-155 gap-4.5 bg-gray-175/97 p-6 shadow-overlay",
+      inline: "gap-3.5 bg-gray-175 p-4",
+    },
+  },
+});
+
+const optionsVariants = cva("grid gap-2.5", {
+  variants: { layout: { overlay: "grid-cols-3", inline: "grid-cols-1" } },
+});
+
+/** Sur téléphone, le code est dans un onglet et il n'y a pas de barre d'espace. */
+const GUIDANCE: Readonly<
+  Record<EmptyStateLayout, { readonly where: string; readonly hint: string }>
+> = {
+  overlay: {
+    where: "in the panel on the right",
+    hint: "Or click any empty slot. Press space to play.",
+  },
+  inline: { where: "in the Code tab", hint: "Or tap any empty slot below." },
+};
+
+export interface EmptyStateCardProps {
+  /** Par-dessus la grille vide (desktop), ou au-dessus d'elle (téléphone). */
+  readonly layout: EmptyStateLayout;
+}
+
+/** Premier lancement : invitation à créer un clip. */
+export function EmptyStateCard({ layout }: EmptyStateCardProps) {
+  const guidance = GUIDANCE[layout];
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center pl-30">
-      <div className="pointer-events-auto flex w-155 flex-col gap-4.5 rounded-12 border border-gray-280 bg-gray-175/97 p-6 shadow-overlay">
+    <div className={wrapperVariants({ layout })}>
+      <div className={cardVariants({ layout })}>
         <div className="flex flex-col gap-1.5">
           <h2 className="text-display font-semibold tracking-tight">Make your first loop</h2>
           <p className="text-title leading-normal text-pretty text-fg-2">
-            Pick a clip type and start clicking. Every click writes Strudel code in the panel on the
-            right — read along and you&apos;ll pick up the language.
+            Pick a clip type and start clicking. Every click writes Strudel code {guidance.where} —
+            read along and you&apos;ll pick up the language.
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className={optionsVariants({ layout })}>
           {START_OPTIONS.map((option) => (
             <StartCard key={option.title} option={option} />
           ))}
         </div>
-        <span className="text-small text-fg-3">Or click any empty slot. Press space to play.</span>
+        <span className="text-small text-fg-3">{guidance.hint}</span>
       </div>
     </div>
   );

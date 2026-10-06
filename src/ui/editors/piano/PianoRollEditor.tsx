@@ -8,6 +8,7 @@ import { useUiStore } from "@/store/uiStore";
 import { drawPianoRoll } from "@/ui/editors/piano/drawPianoRoll";
 import { drawRuler } from "@/ui/editors/piano/drawRuler";
 import {
+  KEYS_WIDTH,
   PIANO_GRID_HEIGHT,
   PIANO_ROW_HEIGHT,
   RULER_HEIGHT,
@@ -82,7 +83,7 @@ export function PianoRollEditor({ clip, trackId }: PianoRollEditorProps) {
           className="w-full shrink-0"
           style={{ height: RULER_HEIGHT }}
         />
-        <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
+        <div ref={scroller} className="relative min-h-0 flex-1 overflow-y-auto">
           <canvas
             ref={grid}
             role="grid"
@@ -90,6 +91,12 @@ export function PianoRollEditor({ clip, trackId }: PianoRollEditorProps) {
             className="w-full touch-none"
             style={{ height: PIANO_GRID_HEIGHT }}
             {...pointer}
+          />
+          {/* Le canvas capte tous les gestes : au doigt, on fait défiler les hauteurs en glissant sur le clavier. */}
+          <div
+            aria-hidden
+            className="absolute top-0 left-0 touch-pan-y md:hidden"
+            style={{ width: KEYS_WIDTH, height: PIANO_GRID_HEIGHT }}
           />
         </div>
       </div>

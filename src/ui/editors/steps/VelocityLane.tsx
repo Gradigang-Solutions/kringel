@@ -43,7 +43,7 @@ export function VelocityLane({ clipId, row, trackColor, playhead }: VelocityLane
   const editedVelocity = editedStep === null ? null : (row.velocities[editedStep] ?? 0);
   return (
     <div className="grid-steps mt-1.5 grid h-17.5 shrink-0 items-stretch gap-4 border-t border-gray-225 pt-2.5">
-      <div className="flex flex-col gap-0.75 px-2">
+      <div className="flex flex-col gap-0.75 px-2 max-md:sticky max-md:left-0 max-md:z-10 max-md:bg-gray-175">
         <span className="text-tiny font-semibold tracking-caps text-fg-3">VELOCITY</span>
         <span className="text-emphasis font-medium">{soundName(row.sound)}</span>
       </div>
@@ -61,7 +61,7 @@ export function VelocityLane({ clipId, row, trackColor, playhead }: VelocityLane
           }}
         />
       </div>
-      <div className="flex flex-col gap-0.75">
+      <div className="flex flex-col gap-0.75 max-md:hidden">
         {editedStep === null || editedVelocity === null ? (
           <span className="text-label text-fg-3">Drag a bar to set velocity</span>
         ) : (

@@ -8,8 +8,13 @@ export function ProjectMenu() {
   return (
     <Dropdown
       trigger={
-        <Button variant="primary" size="md" className="gap-1.5 pr-2.5">
-          Project
+        <Button
+          variant="primary"
+          size="md"
+          aria-label="Project"
+          className="gap-1.5 pr-2.5 max-md:pl-2.5"
+        >
+          <span className="max-md:hidden">Project</span>
           <ChevronDown size={13} aria-hidden />
         </Button>
       }

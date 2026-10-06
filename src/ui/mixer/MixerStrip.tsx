@@ -56,7 +56,7 @@ export function MixerStrip({ track }: MixerStripProps) {
   return (
     <TrackScope
       color={track.color}
-      className="flex min-h-0 flex-col gap-2.5 rounded-8 border border-gray-225 bg-gray-185 px-3 py-2.5"
+      className="flex min-h-0 flex-col gap-2.5 rounded-8 border border-gray-225 bg-gray-185 px-3 py-2.5 max-md:w-44 max-md:shrink-0 max-md:snap-start"
     >
       <div className="flex items-center justify-between">
         <span className="text-caption font-semibold tracking-caps text-track uppercase">

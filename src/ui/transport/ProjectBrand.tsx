@@ -18,10 +18,10 @@ export function ProjectBrand() {
   const saveStatus = useProjectStore((state) => state.saveStatus);
   const [draft, setDraft] = useState<string | null>(null);
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex min-w-0 items-center gap-3 max-md:gap-2">
       <Logo />
-      <span className="text-brand font-semibold tracking-tight">Kringel</span>
-      <span className="h-4 w-px bg-gray-300" aria-hidden />
+      <span className="text-brand font-semibold tracking-tight max-md:hidden">Kringel</span>
+      <span className="h-4 w-px bg-gray-300 max-md:hidden" aria-hidden />
       <input
         aria-label="Project name"
         value={draft ?? name}
@@ -33,9 +33,11 @@ export function ProjectBrand() {
         onKeyDown={(event) => {
           if (event.key === "Enter") event.currentTarget.blur();
         }}
-        className="field-sizing-content min-w-12 rounded-4 bg-transparent px-1 text-title font-medium text-gray-860 outline-none hover:bg-gray-205 focus:bg-gray-205"
+        className="field-sizing-content min-w-12 rounded-4 max-md:w-full max-md:min-w-0 bg-transparent px-1 text-title font-medium text-gray-860 outline-none hover:bg-gray-205 focus:bg-gray-205"
       />
-      <span className="text-small whitespace-nowrap text-fg-3">{SAVE_LABELS[saveStatus]}</span>
+      <span className="text-small whitespace-nowrap text-fg-3 max-md:hidden">
+        {SAVE_LABELS[saveStatus]}
+      </span>
     </div>
   );
 }

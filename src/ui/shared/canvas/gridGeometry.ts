@@ -9,16 +9,20 @@ export interface GroupedSpacing {
   readonly groupGap: number;
 }
 
+/** Longueur totale des écarts entre `count` cellules regroupées. */
+export function groupedGapsLength(count: number, spacing: GroupedSpacing): number {
+  if (count <= 0) return 0;
+  const groups = Math.ceil(count / spacing.groupSize);
+  return (count - groups) * spacing.cellGap + (groups - 1) * spacing.groupGap;
+}
+
 /**
  * Découpe une longueur en cellules regroupées (les pas par temps de 4) :
  * un petit écart entre cellules, un plus grand entre groupes.
  */
 export function groupedSpans(length: number, count: number, spacing: GroupedSpacing): Span[] {
   if (count <= 0) return [];
-  const groups = Math.ceil(count / spacing.groupSize);
-  const cellGaps = count - groups;
-  const totalGaps = cellGaps * spacing.cellGap + (groups - 1) * spacing.groupGap;
-  const size = Math.max(0, (length - totalGaps) / count);
+  const size = Math.max(0, (length - groupedGapsLength(count, spacing)) / count);
   return Array.from({ length: count }, (_, index) => {
     const group = Math.floor(index / spacing.groupSize);
     const indexInGroup = index % spacing.groupSize;

@@ -10,7 +10,7 @@ export function TransportControls() {
   const isPlaying = useIsPlaying();
   const hasAnyClip = useHasAnyClip();
   return (
-    <div className="flex items-center gap-4.5">
+    <div className="flex items-center gap-4.5 max-md:gap-2">
       <div className="flex gap-1">
         <IconButton label="Stop" size="lg" variant="subtle" onClick={stopPlayback}>
           <Square size={10} fill="currentColor" strokeWidth={0} aria-hidden />
@@ -28,7 +28,9 @@ export function TransportControls() {
         </IconButton>
       </div>
       <BpmControl />
-      <CycleDisplay />
+      <div className="max-md:hidden">
+        <CycleDisplay />
+      </div>
     </div>
   );
 }

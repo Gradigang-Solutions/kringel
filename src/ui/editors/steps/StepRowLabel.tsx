@@ -31,7 +31,7 @@ export function StepRowLabel({ clipId, row, isSelected }: StepRowLabelProps) {
         )}
       >
         <span className="flex-1 truncate text-emphasis font-medium">{name}</span>
-        <span className="rounded-3 bg-gray-235 px-1.25 py-px font-mono text-caption text-fg-2">
+        <span className="rounded-3 bg-gray-235 px-1.25 py-px font-mono text-caption text-fg-2 max-md:hidden">
           {row.sound}
         </span>
         <button

@@ -64,7 +64,7 @@ export function ClipSlotFilled({
           }}
           onDoubleClick={(event) => event.stopPropagation()}
           className={cn(
-            "flex size-3.5 shrink-0 items-center justify-center rounded-2 hover:bg-white/10",
+            "flex size-3.5 shrink-0 items-center justify-center rounded-2 hover:bg-white/10 max-md:size-6",
             isActive || status === "queued" ? "text-track" : "text-gray-600",
           )}
         >

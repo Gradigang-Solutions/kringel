@@ -51,7 +51,7 @@ export function AddSoundRow({ clip }: { readonly clip: StepsClip }) {
           </button>
         ))}
       </div>
-      <span />
+      <span className="max-md:hidden" />
     </div>
   );
 }

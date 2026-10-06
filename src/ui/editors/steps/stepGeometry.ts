@@ -1,11 +1,23 @@
 import { STEPS_PER_BEAT } from "@/model/constants";
-import { groupedSpans, spanIndexAt, type Span } from "@/ui/shared/canvas/gridGeometry";
+import {
+  groupedGapsLength,
+  groupedSpans,
+  spanIndexAt,
+  type Span,
+} from "@/ui/shared/canvas/gridGeometry";
 
 /** Dimensions partagées par le canvas et les colonnes DOM qui l'entourent (libellés, mini-notation). */
 export const STEP_HEADER_HEIGHT = 18;
 export const STEP_ROW_HEIGHT = 46;
 export const STEP_ROW_GAP = 6;
 export const STEP_SPACING = { groupSize: STEPS_PER_BEAT, cellGap: 4, groupGap: 10 } as const;
+
+/** Largeur minimale d'un pas pour rester touchable au doigt ; au-delà, la grille défile. */
+export const MIN_TOUCH_STEP_WIDTH = 24;
+
+export function stepGridMinWidth(stepCount: number): number {
+  return stepCount * MIN_TOUCH_STEP_WIDTH + groupedGapsLength(stepCount, STEP_SPACING);
+}
 
 export interface StepGridLayout {
   readonly columns: readonly Span[];

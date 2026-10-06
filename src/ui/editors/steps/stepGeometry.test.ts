@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  MIN_TOUCH_STEP_WIDTH,
   stepCellAt,
   stepGridHeight,
   stepGridLayout,
+  stepGridMinWidth,
   velocityAtHeight,
 } from "@/ui/editors/steps/stepGeometry";
 
@@ -34,5 +36,14 @@ describe("velocityAtHeight", () => {
     expect(velocityAtHeight(45, 60)).toBe(0.25);
     expect(velocityAtHeight(80, 60)).toBe(0);
     expect(velocityAtHeight(10, 0)).toBe(0);
+  });
+});
+
+describe("stepGridMinWidth", () => {
+  it("donne à chaque pas au moins la largeur touchable une fois les écarts retirés", () => {
+    const minWidth = stepGridMinWidth(16);
+    const columns = stepGridLayout(minWidth, 16, 1).columns;
+    expect(columns[0]!.size).toBeCloseTo(MIN_TOUCH_STEP_WIDTH);
+    expect(columns[15]!.start + columns[15]!.size).toBeCloseTo(minWidth);
   });
 });
