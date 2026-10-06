@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  activeToneCount,
   addNote,
   deleteNote,
+  envelopeLabel,
   moveNote,
   resizeNote,
+  setClipFilter,
+  setEnvelope,
   setNotesCycles,
   setScale,
   setSound,
@@ -86,5 +90,33 @@ describe("setNotesCycles", () => {
     const long = makeNotesClip({ cycles: 2, notes: [makeNote(60, 12, 8), makeNote(62, 20, 2)] });
     const short = setNotesCycles(long, 1);
     expect(short.notes).toEqual([makeNote(60, 12, 4)]);
+  });
+});
+
+describe("setEnvelope", () => {
+  it("borne et arrondit l'attaque et le release", () => {
+    expect(setEnvelope(clip, "attack", 0.123).attack).toBe(0.12);
+    expect(setEnvelope(clip, "attack", 9).attack).toBe(2);
+    expect(setEnvelope(clip, "release", -1).release).toBe(0);
+    expect(setEnvelope(clip, "release", 9).release).toBe(4);
+  });
+
+  it("affiche Default à zéro, sinon des secondes", () => {
+    expect(envelopeLabel(0)).toBe("Default");
+    expect(envelopeLabel(0.5)).toBe("0.50 s");
+  });
+});
+
+describe("setClipFilter", () => {
+  it("arrondit la coupure et null ouvre le filtre", () => {
+    expect(setClipFilter(clip, 812.3).lpf).toBe(810);
+    expect(setClipFilter(clip, null).lpf).toBeNull();
+  });
+});
+
+describe("activeToneCount", () => {
+  it("compte les réglages de son modifiés", () => {
+    expect(activeToneCount(clip)).toBe(0);
+    expect(activeToneCount(makeNotesClip({ attack: 0.1, lpf: 800 }))).toBe(2);
   });
 });

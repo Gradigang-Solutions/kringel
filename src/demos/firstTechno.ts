@@ -68,7 +68,7 @@ export const firstTechno = demoProject(id, "First techno", 128, [
         [64, 16, 2],
       ]),
       null,
-      notesClip(id, "Swell", PAD, [
+      notesClip(id, "Swell", { ...PAD, attack: 1, release: 2 }, [
         [57, 0, 32],
         [60, 0, 32],
         [64, 0, 32],

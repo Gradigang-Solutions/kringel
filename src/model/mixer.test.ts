@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatDecibels,
   gainToDecibels,
-  filterLabel,
-  filterToPosition,
   panLabel,
-  positionToFilter,
   setFilter,
   setMixerParam,
   toggleMute,
@@ -44,27 +41,6 @@ describe("mute et solo", () => {
   });
 });
 
-describe("curseur de filtre", () => {
-  it("convertit dans les deux sens en échelle logarithmique", () => {
-    expect(filterToPosition("lpf", null)).toBe(1);
-    expect(filterToPosition("lpf", 20)).toBe(0);
-    expect(positionToFilter("lpf", 1)).toBeNull();
-    expect(positionToFilter("lpf", 0)).toBe(20);
-    expect(positionToFilter("lpf", filterToPosition("lpf", 800))).toBeCloseTo(800);
-  });
-
-  it("ouvre le passe-haut en bas de sa course", () => {
-    expect(filterToPosition("hpf", null)).toBe(0);
-    expect(positionToFilter("hpf", 0)).toBeNull();
-    expect(positionToFilter("hpf", 1)).toBe(20000);
-  });
-
-  it("quitte la butée dès le premier cran de curseur", () => {
-    expect(positionToFilter("lpf", 0.99)).not.toBeNull();
-    expect(positionToFilter("hpf", 0.01)).not.toBeNull();
-  });
-});
-
 describe("libellés", () => {
   it("affiche le panoramique comme dans une console", () => {
     expect(panLabel(0.5)).toBe("C");
@@ -72,9 +48,7 @@ describe("libellés", () => {
     expect(panLabel(0.3)).toBe("L40");
   });
 
-  it("affiche le filtre et les décibels", () => {
-    expect(filterLabel(null)).toBe("Off");
-    expect(filterLabel(800)).toBe("800 Hz");
+  it("affiche les décibels", () => {
     expect(formatDecibels(gainToDecibels(1))).toBe("0.0");
     expect(formatDecibels(gainToDecibels(0))).toBe("-∞");
   });

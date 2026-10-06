@@ -33,6 +33,15 @@ describe("export puis import", () => {
     expect(projectFileName(makeProject({ name: "!!!" }))).toBe("project.kringel.json");
   });
 
+  it("ouvre un clip de notes enregistré avant son enveloppe et son filtre", () => {
+    const withoutTone = serializeProject(project).replace(
+      /\s*"attack": 0,\s*"release": 0,\s*"lpf": null,/g,
+      "",
+    );
+    expect(withoutTone).not.toContain('"attack"');
+    expect(parseProjectFile(withoutTone)).toEqual({ isOk: true, project });
+  });
+
   it("ouvre un fichier exporté par une version précédente", () => {
     const file = JSON.stringify({
       format: "kringel-project",

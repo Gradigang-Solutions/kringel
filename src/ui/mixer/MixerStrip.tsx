@@ -1,19 +1,13 @@
 import { formatMixerCall } from "@/codegen/mixer";
 import { cn } from "@/lib/cn";
 import { GAIN_RANGE, MIXER_DEFAULTS, ROOM_RANGE } from "@/model/constants";
-import {
-  filterLabel,
-  filterToPosition,
-  formatDecibels,
-  gainToDecibels,
-  panLabel,
-  positionToFilter,
-} from "@/model/mixer";
+import { filterLabel, filterToPosition, positionToFilter } from "@/model/filter";
+import { formatDecibels, gainToDecibels, panLabel } from "@/model/mixer";
 import type { Track } from "@/model/types";
 import { setFilter, setMixerParam, toggleMute, toggleSolo } from "@/store/actions/mixer";
 import { MixerFxButton } from "@/ui/mixer/MixerFxButton";
 import { stripButtonVariants } from "@/ui/mixer/stripButtonStyle";
-import { MixerParam } from "@/ui/mixer/MixerParam";
+import { ParamSlider } from "@/ui/shared/ParamSlider";
 import { Fader } from "@/ui/primitives/Fader";
 import { TrackScope } from "@/ui/shared/TrackScope";
 
@@ -80,7 +74,7 @@ export function MixerStrip({ track }: MixerStripProps) {
           <span className="font-mono text-caption">{mixer.gain.toFixed(2)}</span>
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <MixerParam
+          <ParamSlider
             label="Pan"
             valueLabel={panLabel(mixer.pan)}
             code={formatMixerCall("pan", mixer)}
@@ -88,14 +82,14 @@ export function MixerStrip({ track }: MixerStripProps) {
             fillFrom="center"
             onChange={(pan) => setMixerParam(track.id, "pan", pan)}
           />
-          <MixerParam
+          <ParamSlider
             label="Filter"
             valueLabel={filterLabel(mixer.lpf)}
             code={formatMixerCall("lpf", mixer)}
             position={filterToPosition("lpf", mixer.lpf)}
             onChange={(position) => setFilter(track.id, "lpf", positionToFilter("lpf", position))}
           />
-          <MixerParam
+          <ParamSlider
             label="Reverb"
             valueLabel={mixer.room.toFixed(2)}
             code={formatMixerCall("room", mixer)}

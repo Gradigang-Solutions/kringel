@@ -71,6 +71,9 @@ export interface NotesOptions {
   readonly soundSource?: SoundSource;
   readonly sound: string;
   readonly cycles?: ClipCycles;
+  readonly attack?: number;
+  readonly release?: number;
+  readonly lpf?: number;
 }
 
 export function notesClip(
@@ -87,6 +90,9 @@ export function notesClip(
     scale: options.scale,
     soundSource: options.soundSource ?? "synth",
     sound: options.sound,
+    attack: options.attack ?? 0,
+    release: options.release ?? 0,
+    lpf: options.lpf ?? null,
     cycles: options.cycles ?? 1,
     notes: notes.map(([pitch, start, duration]) => ({
       id: nextId(),

@@ -58,6 +58,10 @@ export const DELAY_RANGE = { min: 0, max: 1 } as const;
 /** La distorsion monte vite en volume : au-delà de 5, elle sature tout. */
 export const DRIVE_RANGE = { min: 0, max: 5 } as const;
 
+/** Enveloppe d'un clip de notes, en secondes ; 0 laisse la valeur par défaut de Strudel. */
+export const ATTACK_RANGE = { min: 0, max: 2 } as const;
+export const RELEASE_RANGE = { min: 0, max: 4 } as const;
+
 export const DEFAULT_VELOCITY = 1;
 export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const;
 export const DEFAULT_CHANCE = 1;

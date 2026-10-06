@@ -10,6 +10,7 @@ import {
   strudelNoteName,
   strudelScaleName,
 } from "@/model/scales";
+import type { EnvelopeParam } from "@/model/notes";
 import type { Note, NotesClip } from "@/model/types";
 
 const MELODIC = { ignoreDurations: false } as const;
@@ -89,13 +90,35 @@ function velocityCalls(clip: NotesClip): string[] {
   return [method("velocity", quote(clipMini(clip, (note) => formatNumber(note.velocity))))];
 }
 
+/** Appel d'enveloppe, ou null quand le clip garde la valeur par défaut de Strudel. */
+export function envelopeCall(param: EnvelopeParam, seconds: number): string | null {
+  return seconds === 0 ? null : method(param, formatNumber(seconds));
+}
+
+/** Passe-bas du clip, ou null quand il est ouvert. */
+export function clipFilterCall(cutoff: number | null): string | null {
+  return cutoff === null ? null : method("lpf", formatNumber(cutoff));
+}
+
+/** Son du clip après la source : enveloppe puis filtre, sans les valeurs par défaut. */
+function toneCalls(clip: NotesClip): string[] {
+  return [
+    envelopeCall("attack", clip.attack),
+    envelopeCall("release", clip.release),
+    clipFilterCall(clip.lpf),
+  ].filter((methodCall) => methodCall !== null);
+}
+
 /** Notes dans la gamme : degrés avec `n().scale()` ; sinon noms de notes avec `note()`. */
 export function notesPattern(clip: NotesClip): ClipPattern | null {
   if (clip.notes.length === 0) return null;
   const sound = method("s", quote(clip.sound));
   if (!usesScaleDegrees(clip)) {
     const mini = clipMini(clip, (note) => strudelNoteName(note.pitch));
-    return { source: [call("note", quote(mini))], calls: [...velocityCalls(clip), sound] };
+    return {
+      source: [call("note", quote(mini))],
+      calls: [...velocityCalls(clip), sound, ...toneCalls(clip)],
+    };
   }
   const octave = anchorOctaveFor(
     clip.notes.map((note) => note.pitch),
@@ -105,5 +128,8 @@ export function notesPattern(clip: NotesClip): ClipPattern | null {
     String(scaleDegree(note.pitch, clip.root, clip.scale, octave) ?? 0),
   );
   const scale = method("scale", quote(strudelScaleName(clip.root, clip.scale, octave)));
-  return { source: [call("n", quote(mini))], calls: [...velocityCalls(clip), scale, sound] };
+  return {
+    source: [call("n", quote(mini))],
+    calls: [...velocityCalls(clip), scale, sound, ...toneCalls(clip)],
+  };
 }

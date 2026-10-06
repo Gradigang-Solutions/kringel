@@ -8,17 +8,18 @@ export interface PopoverProps {
   /** Nom accessible du panneau ouvert. */
   readonly label: string;
   readonly children: ReactNode;
+  readonly side?: "top" | "bottom";
 }
 
 /** Petit panneau ancré à son déclencheur ; Échap ou un clic à côté le referme. */
-export function Popover({ trigger, label, children }: PopoverProps) {
+export function Popover({ trigger, label, children, side = "top" }: PopoverProps) {
   return (
     <RadixPopover.Root>
       <RadixPopover.Trigger asChild>{trigger}</RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
           aria-label={label}
-          side="top"
+          side={side}
           align="end"
           sideOffset={6}
           collisionPadding={8}

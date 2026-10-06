@@ -1,19 +1,24 @@
 import { method, quote } from "@/codegen/format";
-import { notesPattern } from "@/codegen/notes";
+import { clipFilterCall, envelopeCall, notesPattern } from "@/codegen/notes";
+import { filterLabel } from "@/model/filter";
 import {
   addNote as addNoteModel,
   deleteNote as deleteNoteModel,
+  envelopeLabel,
   moveNote as moveNoteModel,
   resizeNote as resizeNoteModel,
+  setClipFilter as setClipFilterModel,
+  setEnvelope as setEnvelopeModel,
   setNotesCycles,
   setScale as setScaleModel,
   setSound as setSoundModel,
+  type EnvelopeParam,
   type NotePlacement,
 } from "@/model/notes";
 import { findClip, isClipOfKind, updateClipOfKind } from "@/model/project";
 import { noteName, pitchClassName, scaleLabel } from "@/model/scales";
 import type { ClipCycles, NotesClip, PitchClass, ScaleModeId, SoundSource } from "@/model/types";
-import { logChange } from "@/store/changeLog";
+import { logChange, logValueChange } from "@/store/changeLog";
 import { nextId } from "@/store/ids";
 import { getProject, updateProject } from "@/store/projectStore";
 import { updateUi } from "@/store/uiStore";
@@ -95,6 +100,44 @@ export function setSound(clipId: string, source: SoundSource, sound: string): vo
     trackId: context.trackId,
     text: `Sound → ${context.clip.sound}`,
     code: method("s", quote(context.clip.sound)),
+  });
+}
+
+const ENVELOPE_LABELS: Readonly<Record<EnvelopeParam, string>> = {
+  attack: "Attack",
+  release: "Release",
+};
+
+export function setEnvelope(clipId: string, param: EnvelopeParam, seconds: number): void {
+  const before = notesContext(clipId)?.clip[param] ?? 0;
+  const key = `envelope:${param}:${clipId}`;
+  updateNotes(clipId, (clip) => setEnvelopeModel(clip, param, seconds), key);
+  const context = notesContext(clipId);
+  if (!context) return;
+  const after = context.clip[param];
+  logValueChange({
+    key,
+    trackId: context.trackId,
+    label: ENVELOPE_LABELS[param],
+    from: envelopeLabel(before),
+    to: envelopeLabel(after),
+    code: envelopeCall(param, after) ?? `${param} · default`,
+  });
+}
+
+export function setClipFilter(clipId: string, cutoff: number | null): void {
+  const before = notesContext(clipId)?.clip.lpf ?? null;
+  const key = `clip-lpf:${clipId}`;
+  updateNotes(clipId, (clip) => setClipFilterModel(clip, cutoff), key);
+  const context = notesContext(clipId);
+  if (!context) return;
+  logValueChange({
+    key,
+    trackId: context.trackId,
+    label: "Clip filter",
+    from: filterLabel(before),
+    to: filterLabel(context.clip.lpf),
+    code: clipFilterCall(context.clip.lpf) ?? "lpf · off",
   });
 }
 

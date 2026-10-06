@@ -63,6 +63,12 @@ export interface NotesClip {
   readonly scale: ScaleModeId;
   readonly soundSource: SoundSource;
   readonly sound: string;
+  /** Montée du son en secondes ; 0 = valeur par défaut de Strudel. */
+  readonly attack: number;
+  /** Extinction du son en secondes après la fin de la note ; 0 = valeur par défaut de Strudel. */
+  readonly release: number;
+  /** Passe-bas propre au clip, en Hz ; null = ouvert. Le filtre de la piste, écrit après, l'emporte. */
+  readonly lpf: number | null;
   readonly cycles: ClipCycles;
   readonly notes: readonly Note[];
 }

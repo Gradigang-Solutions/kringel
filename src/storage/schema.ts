@@ -1,8 +1,11 @@
 import { z } from "zod";
 import {
+  ATTACK_RANGE,
   CLIP_CYCLE_OPTIONS,
+  FILTER_RANGE,
   MIXER_DEFAULTS,
   RATCHET_RANGE,
+  RELEASE_RANGE,
   SCALE_MODES,
   SOUND_SOURCES,
   SWING_RANGE,
@@ -69,6 +72,9 @@ const clipSchema = z.discriminatedUnion("kind", [
     scale: scaleSchema,
     soundSource: z.enum(SOUND_SOURCES),
     sound: z.string(),
+    attack: z.number().min(ATTACK_RANGE.min).max(ATTACK_RANGE.max).default(ATTACK_RANGE.min),
+    release: z.number().min(RELEASE_RANGE.min).max(RELEASE_RANGE.max).default(RELEASE_RANGE.min),
+    lpf: z.number().min(FILTER_RANGE.min).max(FILTER_RANGE.max).nullable().default(null),
     cycles: cyclesSchema,
     notes: z.array(noteSchema),
   }),

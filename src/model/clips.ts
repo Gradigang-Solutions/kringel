@@ -1,7 +1,9 @@
 import {
+  ATTACK_RANGE,
   CLIP_CYCLE_OPTIONS,
   DEFAULT_DRUM_SOUNDS,
   DEFAULT_KIT,
+  RELEASE_RANGE,
   STEPS_PER_CYCLE,
   SWING_RANGE,
   SYNTH_SOUNDS,
@@ -56,6 +58,9 @@ export function createNotesClip(nextId: IdGenerator, name: string): NotesClip {
     scale: "minor",
     soundSource: "synth",
     sound: SYNTH_SOUNDS[0],
+    attack: ATTACK_RANGE.min,
+    release: RELEASE_RANGE.min,
+    lpf: null,
     cycles: DEFAULT_CYCLES,
     notes: [],
   };

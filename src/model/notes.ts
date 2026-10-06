@@ -1,5 +1,13 @@
-import { clamp } from "@/lib/math";
-import { DEFAULT_VELOCITY, NOTE_RANGE, SAMPLE_SOUNDS, SYNTH_SOUNDS } from "@/model/constants";
+import { clamp, roundTo } from "@/lib/math";
+import {
+  ATTACK_RANGE,
+  DEFAULT_VELOCITY,
+  NOTE_RANGE,
+  RELEASE_RANGE,
+  SAMPLE_SOUNDS,
+  SYNTH_SOUNDS,
+} from "@/model/constants";
+import { boundCutoff } from "@/model/filter";
 import { stepCount } from "@/model/timing";
 import type {
   ClipCycles,
@@ -17,7 +25,12 @@ export interface NotePlacement {
   readonly duration: number;
 }
 
+/** Réglages d'enveloppe d'un clip de notes. */
+export type EnvelopeParam = "attack" | "release";
+
 const MIN_DURATION = 1;
+const ENVELOPE_DECIMALS = 2;
+const ENVELOPE_RANGES = { attack: ATTACK_RANGE, release: RELEASE_RANGE } as const;
 
 /** Garde la note dans le clip : hauteur dans la tessiture, début et fin dans la longueur du clip. */
 function fitPlacement(clip: NotesClip, placement: NotePlacement): NotePlacement {
@@ -88,4 +101,27 @@ export function setNotesCycles(clip: NotesClip, cycles: ClipCycles): NotesClip {
       .filter((note) => note.start < length)
       .map((note) => ({ ...note, duration: Math.min(note.duration, length - note.start) })),
   };
+}
+
+export function setEnvelope(clip: NotesClip, param: EnvelopeParam, seconds: number): NotesClip {
+  const { min, max } = ENVELOPE_RANGES[param];
+  return { ...clip, [param]: roundTo(clamp(seconds, min, max), ENVELOPE_DECIMALS) };
+}
+
+export function setClipFilter(clip: NotesClip, cutoff: number | null): NotesClip {
+  return { ...clip, lpf: boundCutoff(cutoff) };
+}
+
+/** « Default » à 0, sinon la durée en secondes. */
+export function envelopeLabel(seconds: number): string {
+  return seconds === 0 ? "Default" : `${seconds.toFixed(2)} s`;
+}
+
+export function envelopeMax(param: EnvelopeParam): number {
+  return ENVELOPE_RANGES[param].max;
+}
+
+/** Nombre de réglages de son du clip qui s'écartent de leur valeur par défaut. */
+export function activeToneCount(clip: NotesClip): number {
+  return [clip.attack > 0, clip.release > 0, clip.lpf !== null].filter(Boolean).length;
 }

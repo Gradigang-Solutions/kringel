@@ -16,11 +16,17 @@ import { Select } from "@/ui/primitives/Select";
 import { IconButton } from "@/ui/primitives/IconButton";
 import { Switch } from "@/ui/primitives/Switch";
 import { EditorToolbar } from "@/ui/editors/EditorToolbar";
+import { ToneButton } from "@/ui/editors/piano/ToneButton";
 
 const SOURCE_LABELS: Readonly<Record<SoundSource, string>> = { synth: "Synth", sample: "Sample" };
 const LABEL = "text-label text-fg-3";
 
-export function PianoToolbar({ clip }: { readonly clip: NotesClip }) {
+export interface PianoToolbarProps {
+  readonly clip: NotesClip;
+  readonly trackId: string;
+}
+
+export function PianoToolbar({ clip, trackId }: PianoToolbarProps) {
   const isOutOfScaleGrayed = useUiStore((state) => state.isOutOfScaleGrayed);
   const selectedNoteId = useUiStore((state) => state.selectedNoteId);
   return (
@@ -70,6 +76,7 @@ export function PianoToolbar({ clip }: { readonly clip: NotesClip }) {
           }))}
           onChange={(sound) => setSound(clip.id, clip.soundSource, sound)}
         />
+        <ToneButton clip={clip} trackId={trackId} />
       </div>
       <div className="flex items-center gap-2">
         <span className={LABEL}>Length</span>

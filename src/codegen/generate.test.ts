@@ -342,6 +342,45 @@ describe("clip de notes", () => {
     expect(render(clip)).toContain(".velocity(0.7)");
   });
 
+  it("écrit l'enveloppe et le filtre du clip après le son", () => {
+    const clip = makeNotesClip({
+      notes: [makeNote(60, 0, 8)],
+      attack: 0.25,
+      release: 1.5,
+      lpf: 800,
+    });
+    expect(render(clip)).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Lead · Root walk
+        n("0 ~")
+          .scale("C4:minor")
+          .s("sawtooth")
+          .attack(0.25)
+          .release(1.5)
+          .lpf(800)
+      )"
+    `);
+  });
+
+  it("laisse le filtre de la piste, écrit après, l'emporter sur celui du clip", () => {
+    const clip = makeNotesClip({ notes: [makeNote(60, 0, 8)], lpf: 800 });
+    const project = withMixer(withClip(makeProject(), 2, 0, clip), 2, { lpf: 2000 });
+    expect(code(project, playing(project, { 2: clip.id }))).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Lead · Root walk
+        n("0 ~")
+          .scale("C4:minor")
+          .s("sawtooth")
+          .lpf(800)
+          .lpf(2000)
+      )"
+    `);
+  });
+
   it("n'écrit rien pour un clip sans note", () => {
     expect(render(makeNotesClip())).toMatchInlineSnapshot(`
       "setcpm(120/4)

@@ -75,7 +75,7 @@ export function PianoRollEditor({ clip, trackId }: PianoRollEditorProps) {
 
   return (
     <>
-      <PianoToolbar clip={clip} />
+      <PianoToolbar clip={clip} trackId={trackId} />
       <div className="flex min-h-0 flex-1 flex-col px-4 pt-2.5 pb-3.5">
         <canvas
           ref={ruler}

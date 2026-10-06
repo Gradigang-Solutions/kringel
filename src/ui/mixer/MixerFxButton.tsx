@@ -1,13 +1,13 @@
 import { formatMixerCall } from "@/codegen/mixer";
 import { DELAY_RANGE, DRIVE_RANGE } from "@/model/constants";
-import { filterLabel, filterToPosition, positionToFilter } from "@/model/mixer";
+import { filterLabel, filterToPosition, positionToFilter } from "@/model/filter";
 import type { Track } from "@/model/types";
 import { setFilter, setMixerParam } from "@/store/actions/mixer";
 import { activeFxCount } from "@/ui/mixer/fxParams";
-import { MixerParam } from "@/ui/mixer/MixerParam";
 import { stripButtonVariants } from "@/ui/mixer/stripButtonStyle";
 import { Popover } from "@/ui/primitives/Popover";
-import { TrackScope } from "@/ui/shared/TrackScope";
+import { ParamPanel } from "@/ui/shared/ParamPanel";
+import { ParamSlider } from "@/ui/shared/ParamSlider";
 
 export interface MixerFxButtonProps {
   readonly track: Track;
@@ -31,33 +31,29 @@ export function MixerFxButton({ track }: MixerFxButtonProps) {
         </button>
       }
     >
-      {/* Le panneau s'ouvre hors de la tranche : il repose la couleur de la piste. */}
-      <TrackScope color={track.color} className="flex w-48 flex-col gap-3">
-        <span className="text-caption font-semibold tracking-caps text-track uppercase">
-          {track.name} · FX
-        </span>
-        <MixerParam
+      <ParamPanel color={track.color} title={`${track.name} · FX`}>
+        <ParamSlider
           label="High-pass"
           valueLabel={filterLabel(mixer.hpf)}
           code={formatMixerCall("hpf", mixer)}
           position={filterToPosition("hpf", mixer.hpf)}
           onChange={(position) => setFilter(track.id, "hpf", positionToFilter("hpf", position))}
         />
-        <MixerParam
+        <ParamSlider
           label="Drive"
           valueLabel={mixer.distort.toFixed(2)}
           code={formatMixerCall("distort", mixer)}
           position={mixer.distort / DRIVE_RANGE.max}
           onChange={(position) => setMixerParam(track.id, "distort", position * DRIVE_RANGE.max)}
         />
-        <MixerParam
+        <ParamSlider
           label="Delay"
           valueLabel={mixer.delay.toFixed(2)}
           code={formatMixerCall("delay", mixer)}
           position={mixer.delay / DELAY_RANGE.max}
           onChange={(position) => setMixerParam(track.id, "delay", position * DELAY_RANGE.max)}
         />
-      </TrackScope>
+      </ParamPanel>
     </Popover>
   );
 }

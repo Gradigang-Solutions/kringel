@@ -1,14 +1,13 @@
 import { formatMixerCall, type MixerParam } from "@/codegen/mixer";
 import { assertNever } from "@/lib/assertNever";
+import { filterLabel, type FilterParam } from "@/model/filter";
 import {
-  filterLabel,
   panLabel,
   setFilter as setFilterModel,
   setMixerParam as setMixerParamModel,
   toggleMute as toggleMuteModel,
   toggleSolo as toggleSoloModel,
   type ContinuousMixerParam,
-  type FilterParam,
 } from "@/model/mixer";
 import { findTrack } from "@/model/project";
 import type { MixerSettings } from "@/model/types";
