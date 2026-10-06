@@ -3,6 +3,7 @@ import { transpiler } from "@strudel/transpiler";
 import { getAudioContext, initAudio, webaudioOutput } from "@strudel/webaudio";
 import { loadSounds } from "@/engine/samples";
 import { ensureScope } from "@/engine/scope";
+import { clearSoundEvents, withSoundEvents } from "@/engine/soundEvents";
 
 export { checkSource, previewNotes } from "@/engine/check";
 export { readMasterLevels } from "@/engine/meter";
@@ -14,7 +15,9 @@ export {
   type RecordedAudio,
 } from "@/engine/recorder";
 export { strudelReplUrl } from "@/engine/replUrl";
-export type { PreviewNote, StereoLevels } from "@/engine/types";
+export { drainSoundEvents } from "@/engine/soundEvents";
+export { readMasterBands } from "@/engine/spectrum";
+export type { PreviewNote, SoundEvent, SpectrumBands, StereoLevels } from "@/engine/types";
 
 export interface CodeUpdate {
   /** Cycle à partir duquel le nouveau code joue ; null si rien ne joue encore. */
@@ -67,7 +70,7 @@ async function createRepl(): Promise<Repl> {
   await ensureScope();
   const context = getAudioContext();
   const created = repl({
-    defaultOutput: webaudioOutput,
+    defaultOutput: withSoundEvents(webaudioOutput),
     getTime: () => context.currentTime,
     transpiler,
     editPattern: switchAtNextCycle,
@@ -120,6 +123,7 @@ export async function play(code: string): Promise<string | null> {
 export function stop(): void {
   instance?.stop();
   pendingSwitch = null;
+  clearSoundEvents();
 }
 
 /** Position de lecture en cycles (0 à l'arrêt). */

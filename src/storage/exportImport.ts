@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseJson } from "@/lib/json";
 import { PROJECT_SCHEMA_VERSION } from "@/model/constants";
 import type { Project } from "@/model/types";
 import { isSupportedVersion, parseVersionedProject } from "@/storage/migrate";
@@ -36,15 +37,6 @@ export function projectSlug(project: Project): string {
 
 export function projectFileName(project: Project): string {
   return `${projectSlug(project)}.kringel.json`;
-}
-
-function parseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    // Le contenu n'est pas du JSON : l'appelant reçoit undefined et signale un fichier invalide.
-    return undefined;
-  }
 }
 
 /** Valide un projet exporté (fichier ou lien) : format, version, puis contenu du projet. */

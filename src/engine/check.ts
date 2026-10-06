@@ -1,5 +1,6 @@
-import { evaluate, isPattern, valueToMidi, type Pattern } from "@strudel/core";
+import { evaluate, isPattern, type Pattern } from "@strudel/core";
 import { transpiler } from "@strudel/transpiler";
+import { hapPitch } from "@/engine/pitch";
 import { ensureScope } from "@/engine/scope";
 import type { PreviewNote } from "@/engine/types";
 import type { CodeError } from "@/model/playback";
@@ -39,16 +40,6 @@ export async function checkSource(source: string): Promise<CodeError | null> {
     return null;
   } catch (error) {
     return toCodeError(error);
-  }
-}
-
-function hapPitch(value: unknown): number | null {
-  if (typeof value !== "object" || value === null) return null;
-  try {
-    return valueToMidi(value);
-  } catch {
-    // Une valeur sans hauteur (un sample de batterie) n'apparaît simplement pas dans l'aperçu.
-    return null;
   }
 }
 

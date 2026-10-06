@@ -1,17 +1,13 @@
 import { renameProject } from "@/store/actions/project";
 import { useProjectStore, type SaveStatus } from "@/store/projectStore";
 import { NameInput } from "@/ui/primitives/NameInput";
+import { Logo } from "@/ui/transport/Logo";
 
 const SAVE_LABELS: Readonly<Record<SaveStatus, string>> = {
   never: "Not saved yet",
   pending: "Saving…",
   saved: "Saved",
 };
-
-/** Même fichier que le favicon, pour que le logo n'ait qu'une seule source. */
-function Logo() {
-  return <img src="/favicon.svg" alt="" className="size-7 shrink-0" aria-hidden />;
-}
 
 export function ProjectBrand() {
   const name = useProjectStore((state) => state.project.name);

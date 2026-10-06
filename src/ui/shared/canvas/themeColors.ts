@@ -22,6 +22,10 @@ const TOKENS = {
   keyWhite: "--color-gray-860",
   keyLabel: "--color-gray-235",
   error: "--color-error",
+  bokehLow: "--color-bokeh-low",
+  bokehMid: "--color-bokeh-mid",
+  bokehHigh: "--color-bokeh-high",
+  bokehTonal: "--color-bokeh-tonal",
 } as const;
 
 export type ThemeToken = keyof typeof TOKENS;

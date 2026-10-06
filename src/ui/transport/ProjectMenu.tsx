@@ -1,16 +1,19 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { setBackgroundVisuals } from "@/store/actions/layout";
 import { useCanRedo, useCanUndo } from "@/store/selectors";
+import { useUiStore } from "@/store/uiStore";
 import { redoAndRecheck, undoAndRecheck } from "@/ui/app/historyCommands";
 import { Button } from "@/ui/primitives/Button";
 import { Dropdown } from "@/ui/primitives/Menu";
 import { CreditsDialog } from "@/ui/transport/CreditsDialog";
 import { exportProject, importProject, startNewProject } from "@/ui/transport/projectFiles";
 
-/** Menu du projet, à côté du bouton Share : historique, fichiers JSON, nouveau projet, crédits. */
+/** Menu du projet, à côté du bouton Share : historique, fichiers JSON, nouveau projet, visuels, crédits. */
 export function ProjectMenu() {
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
+  const isBackgroundVisualsOn = useUiStore((state) => state.isBackgroundVisualsOn);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   return (
     <>
@@ -32,6 +35,11 @@ export function ProjectMenu() {
           { label: "Export JSON", onSelect: exportProject },
           { label: "Import JSON…", onSelect: () => void importProject() },
           { label: "New project", onSelect: startNewProject },
+          {
+            label: "Background visuals",
+            isChecked: isBackgroundVisualsOn,
+            onSelect: () => setBackgroundVisuals(!isBackgroundVisualsOn),
+          },
           { label: "Sound credits", onSelect: () => setIsCreditsOpen(true) },
         ]}
       />

@@ -55,7 +55,13 @@ declare module "@strudel/transpiler" {
 }
 
 declare module "@strudel/webaudio" {
-  export const webaudioOutput: unknown;
+  export function webaudioOutput(
+    hap: import("@strudel/core").Hap,
+    deadline: number,
+    duration: number,
+    cps: number,
+    time: number,
+  ): Promise<void>;
   export function getAudioContext(): AudioContext;
   export function initAudio(options?: object): Promise<void>;
   export function registerSynthSounds(): Promise<void> | void;

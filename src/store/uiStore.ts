@@ -49,6 +49,8 @@ interface UiStore {
   readonly highlightOrigin: HighlightOrigin | null;
   /** Début de l'enregistrement en cours (horloge du navigateur, en ms), ou null. */
   readonly recordingStartedAt: number | null;
+  /** Halos du fond pendant la lecture (préférence du navigateur). */
+  readonly isBackgroundVisualsOn: boolean;
 }
 
 export const MAX_CHANGES = 3;
@@ -70,6 +72,7 @@ export const INITIAL_UI: UiStore = {
   highlightedControls: null,
   highlightOrigin: null,
   recordingStartedAt: null,
+  isBackgroundVisualsOn: true,
 };
 
 export const useUiStore = create<UiStore>()(() => INITIAL_UI);

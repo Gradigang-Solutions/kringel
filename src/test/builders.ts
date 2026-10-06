@@ -1,3 +1,4 @@
+import type { SoundEvent } from "@/engine";
 import { MIXER_DEFAULTS, STEPS_PER_CYCLE } from "@/model/constants";
 import { INITIAL_PLAYBACK, type PlaybackState } from "@/model/playback";
 import { createProject, setSlot } from "@/model/project";
@@ -137,4 +138,13 @@ export function asVersion1(project: Project): unknown {
       Object.fromEntries(Object.entries(track).filter(([key]) => key !== "defaultClipKind")),
     ),
   };
+}
+
+export function makeSoundEvent(overrides: Partial<SoundEvent> = {}): SoundEvent {
+  return { sound: "bd", midi: null, power: 1, duration: 0.25, ...overrides };
+}
+
+/** Tirage « aléatoire » constant, pour des halos aux positions prévisibles. */
+export function makeRandom(value = 0.5): () => number {
+  return () => value;
 }

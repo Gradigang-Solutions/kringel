@@ -7,3 +7,7 @@ export function setCodePanelOpen(isCodePanelOpen: boolean): void {
 export function setPhoneTab(phoneTab: PhoneTab): void {
   updateUi({ phoneTab });
 }
+
+export function setBackgroundVisuals(isBackgroundVisualsOn: boolean): void {
+  updateUi({ isBackgroundVisualsOn });
+}
