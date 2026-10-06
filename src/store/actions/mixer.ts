@@ -1,12 +1,14 @@
 import { formatMixerCall, type MixerParam } from "@/codegen/mixer";
+import { assertNever } from "@/lib/assertNever";
 import {
-  lpfLabel,
+  filterLabel,
   panLabel,
-  setLpf as setLpfModel,
+  setFilter as setFilterModel,
   setMixerParam as setMixerParamModel,
   toggleMute as toggleMuteModel,
   toggleSolo as toggleSoloModel,
   type ContinuousMixerParam,
+  type FilterParam,
 } from "@/model/mixer";
 import { findTrack } from "@/model/project";
 import type { MixerSettings } from "@/model/types";
@@ -17,6 +19,9 @@ const PARAM_LABELS: Readonly<Record<MixerParam, string>> = {
   gain: "volume",
   pan: "pan",
   lpf: "filter",
+  hpf: "high-pass",
+  distort: "drive",
+  delay: "delay",
   room: "reverb",
 };
 
@@ -25,10 +30,15 @@ function displayValue(param: MixerParam, mixer: MixerSettings): string {
     case "pan":
       return panLabel(mixer.pan);
     case "lpf":
-      return lpfLabel(mixer.lpf);
+    case "hpf":
+      return filterLabel(mixer[param]);
     case "gain":
     case "room":
+    case "delay":
+    case "distort":
       return mixer[param].toFixed(2);
+    default:
+      return assertNever(param);
   }
 }
 
@@ -58,10 +68,13 @@ export function setMixerParam(trackId: string, param: ContinuousMixerParam, valu
   if (before) logMixerChange(trackId, param, before);
 }
 
-export function setLpf(trackId: string, lpf: number | null): void {
+export function setFilter(trackId: string, param: FilterParam, cutoff: number | null): void {
   const before = mixerOf(trackId);
-  updateProject((project) => setLpfModel(project, trackId, lpf), `mixer:${trackId}:lpf`);
-  if (before) logMixerChange(trackId, "lpf", before);
+  updateProject(
+    (project) => setFilterModel(project, trackId, param, cutoff),
+    `mixer:${trackId}:${param}`,
+  );
+  if (before) logMixerChange(trackId, param, before);
 }
 
 export function toggleMute(trackId: string): void {

@@ -2,10 +2,18 @@ import { formatNumber, method } from "@/codegen/format";
 import { MIXER_DEFAULTS } from "@/model/constants";
 import type { MixerSettings } from "@/model/types";
 
-export type MixerParam = "gain" | "pan" | "lpf" | "room";
+export type MixerParam = "gain" | "pan" | "lpf" | "hpf" | "distort" | "delay" | "room";
 
-/** Ordre d'écriture : effets d'abord, niveau en dernier. */
-const PARAM_ORDER: readonly MixerParam[] = ["lpf", "room", "pan", "gain"];
+/** Ordre d'écriture : timbre (filtres, distorsion), puis envois (écho, reverb), niveau en dernier. */
+const PARAM_ORDER: readonly MixerParam[] = [
+  "hpf",
+  "lpf",
+  "distort",
+  "delay",
+  "room",
+  "pan",
+  "gain",
+];
 
 /** L'appel écrit par un réglage du mixer, ou null s'il garde sa valeur par défaut. */
 export function formatMixerCall(param: MixerParam, mixer: MixerSettings): string | null {

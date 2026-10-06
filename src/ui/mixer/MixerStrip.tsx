@@ -2,15 +2,17 @@ import { formatMixerCall } from "@/codegen/mixer";
 import { cn } from "@/lib/cn";
 import { GAIN_RANGE, MIXER_DEFAULTS, ROOM_RANGE } from "@/model/constants";
 import {
+  filterLabel,
+  filterToPosition,
   formatDecibels,
   gainToDecibels,
-  lpfLabel,
-  lpfToPosition,
   panLabel,
-  positionToLpf,
+  positionToFilter,
 } from "@/model/mixer";
 import type { Track } from "@/model/types";
-import { setLpf, setMixerParam, toggleMute, toggleSolo } from "@/store/actions/mixer";
+import { setFilter, setMixerParam, toggleMute, toggleSolo } from "@/store/actions/mixer";
+import { MixerFxButton } from "@/ui/mixer/MixerFxButton";
+import { stripButtonVariants } from "@/ui/mixer/stripButtonStyle";
 import { MixerParam } from "@/ui/mixer/MixerParam";
 import { Fader } from "@/ui/primitives/Fader";
 import { TrackScope } from "@/ui/shared/TrackScope";
@@ -34,12 +36,7 @@ function ToggleButton({
       aria-label={title}
       aria-pressed={isOn}
       onClick={onClick}
-      className={cn(
-        "flex h-6 flex-1 items-center justify-center rounded-5 text-label font-semibold",
-        isOn
-          ? "bg-fg-1 text-fg-inverse"
-          : "bg-gray-235 text-fg-2 hover:bg-gray-250 hover:text-fg-1",
-      )}
+      className={stripButtonVariants({ tone: isOn ? "on" : "off" })}
     >
       {label}
     </button>
@@ -93,10 +90,10 @@ export function MixerStrip({ track }: MixerStripProps) {
           />
           <MixerParam
             label="Filter"
-            valueLabel={lpfLabel(mixer.lpf)}
+            valueLabel={filterLabel(mixer.lpf)}
             code={formatMixerCall("lpf", mixer)}
-            position={lpfToPosition(mixer.lpf)}
-            onChange={(position) => setLpf(track.id, positionToLpf(position))}
+            position={filterToPosition("lpf", mixer.lpf)}
+            onChange={(position) => setFilter(track.id, "lpf", positionToFilter("lpf", position))}
           />
           <MixerParam
             label="Reverb"
@@ -119,6 +116,7 @@ export function MixerStrip({ track }: MixerStripProps) {
               isOn={mixer.isSoloed}
               onClick={() => toggleSolo(track.id)}
             />
+            <MixerFxButton track={track} />
           </div>
         </div>
       </div>

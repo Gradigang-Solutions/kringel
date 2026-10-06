@@ -1,5 +1,7 @@
 import { ContextMenu, DropdownMenu } from "radix-ui";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import { OVERLAY_SURFACE_CLASS } from "@/ui/primitives/overlayStyle";
 
 export interface MenuItem {
   readonly label: string;
@@ -8,8 +10,7 @@ export interface MenuItem {
   readonly shortcut?: string;
 }
 
-const CONTENT_CLASS =
-  "z-50 min-w-40 rounded-6 border border-gray-280 bg-gray-195 p-1 shadow-overlay";
+const CONTENT_CLASS = cn(OVERLAY_SURFACE_CLASS, "min-w-40 p-1");
 const ITEM_CLASS =
   "flex h-6.5 items-center justify-between gap-6 rounded-4 px-2 text-body text-fg-2 outline-none select-none data-disabled:opacity-35 data-highlighted:bg-gray-250 data-highlighted:text-fg-1";
 

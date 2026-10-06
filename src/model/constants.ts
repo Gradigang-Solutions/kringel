@@ -40,6 +40,9 @@ export const MIXER_DEFAULTS = {
   gain: 1,
   pan: 0.5,
   lpf: null,
+  hpf: null,
+  distort: 0,
+  delay: 0,
   room: 0,
   isMuted: false,
   isSoloed: false,
@@ -47,8 +50,13 @@ export const MIXER_DEFAULTS = {
 
 export const GAIN_RANGE = { min: 0, max: 1.25 } as const;
 export const PAN_RANGE = { min: 0, max: 1 } as const;
-export const LPF_RANGE = { min: 20, max: 20000 } as const;
+/** Fréquences de coupure des filtres passe-bas et passe-haut, en Hz. */
+export const FILTER_RANGE = { min: 20, max: 20000 } as const;
 export const ROOM_RANGE = { min: 0, max: 1 } as const;
+/** Envoi vers l'écho : Strudel le cale sur 3/16 de cycle, avec une réinjection de 0,5. */
+export const DELAY_RANGE = { min: 0, max: 1 } as const;
+/** La distorsion monte vite en volume : au-delà de 5, elle sature tout. */
+export const DRIVE_RANGE = { min: 0, max: 5 } as const;
 
 export const DEFAULT_VELOCITY = 1;
 export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const;

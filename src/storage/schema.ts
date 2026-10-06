@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   CLIP_CYCLE_OPTIONS,
+  MIXER_DEFAULTS,
   RATCHET_RANGE,
   SCALE_MODES,
   SOUND_SOURCES,
@@ -86,6 +87,10 @@ const trackSchema = z.object({
     gain: z.number(),
     pan: z.number(),
     lpf: z.number().nullable(),
+    // Effets ajoutés après les premiers projets : absents, ils gardent leur valeur par défaut.
+    hpf: z.number().nullable().default(MIXER_DEFAULTS.hpf),
+    distort: z.number().default(MIXER_DEFAULTS.distort),
+    delay: z.number().default(MIXER_DEFAULTS.delay),
     room: z.number(),
     isMuted: z.boolean(),
     isSoloed: z.boolean(),

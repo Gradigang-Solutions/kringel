@@ -12,6 +12,12 @@ export interface MixerSettings {
   readonly pan: number;
   /** Fréquence de coupure du passe-bas en Hz ; null = filtre désactivé. */
   readonly lpf: number | null;
+  /** Fréquence de coupure du passe-haut en Hz ; null = filtre désactivé. */
+  readonly hpf: number | null;
+  /** Montant de distorsion ; 0 = son propre. */
+  readonly distort: number;
+  /** Envoi vers l'écho, de 0 à 1. */
+  readonly delay: number;
   readonly room: number;
   readonly isMuted: boolean;
   readonly isSoloed: boolean;

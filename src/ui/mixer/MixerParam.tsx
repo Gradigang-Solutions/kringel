@@ -11,7 +11,7 @@ export interface MixerParamProps {
   readonly onChange: (position: number) => void;
 }
 
-const POSITION_STEP = 0.005;
+const POSITION_STEP = 0.01;
 
 /** Un réglage du mixer : libellé, valeur, curseur et l'appel qu'il écrit. */
 export function MixerParam({

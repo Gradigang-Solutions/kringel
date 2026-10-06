@@ -11,6 +11,9 @@ describe("formatMixerCall", () => {
   it("n'écrit rien pour une valeur par défaut", () => {
     expect(formatMixerCall("lpf", MIXER_DEFAULTS)).toBeNull();
     expect(formatMixerCall("pan", MIXER_DEFAULTS)).toBeNull();
+    expect(formatMixerCall("hpf", MIXER_DEFAULTS)).toBeNull();
+    expect(formatMixerCall("delay", MIXER_DEFAULTS)).toBeNull();
+    expect(formatMixerCall("distort", MIXER_DEFAULTS)).toBeNull();
   });
 });
 

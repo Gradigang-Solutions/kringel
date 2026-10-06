@@ -453,6 +453,26 @@ describe("mixer", () => {
     `);
   });
 
+  it("écrit les effets dans l'ordre : filtres, distorsion, écho, reverb", () => {
+    let project = withClip(makeProject(), 2, 0, arpUp);
+    project = withMixer(project, 2, { hpf: 300, lpf: 2400, distort: 1.5, delay: 0.4, room: 0.25 });
+    expect(code(project, playing(project, { 2: "lead" }))).toMatchInlineSnapshot(`
+      "setcpm(120/4)
+
+      stack(
+        // Lead · Arp up
+        n("0 2 4 6 ~ ~ ~ ~")
+          .scale("C4:minor")
+          .s("triangle")
+          .hpf(300)
+          .lpf(2400)
+          .distort(1.5)
+          .delay(0.4)
+          .room(0.25)
+      )"
+    `);
+  });
+
   it("omet les pistes muettes", () => {
     let project = withClip(makeProject(), 0, 0, fourOnTheFloor);
     project = withClip(project, 1, 0, rootWalk);

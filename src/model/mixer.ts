@@ -1,18 +1,35 @@
 import { clamp, roundTo, roundToSignificant } from "@/lib/math";
-import { GAIN_RANGE, LPF_RANGE, PAN_RANGE, ROOM_RANGE } from "@/model/constants";
+import {
+  DELAY_RANGE,
+  DRIVE_RANGE,
+  FILTER_RANGE,
+  GAIN_RANGE,
+  PAN_RANGE,
+  ROOM_RANGE,
+} from "@/model/constants";
 import { updateTrack } from "@/model/project";
 import type { MixerSettings, Project } from "@/model/types";
 
-export type ContinuousMixerParam = "gain" | "pan" | "room";
+export type ContinuousMixerParam = "gain" | "pan" | "room" | "delay" | "distort";
+export type FilterParam = "lpf" | "hpf";
 
 const PARAM_DECIMALS = 2;
-const LPF_SIGNIFICANT_DIGITS = 2;
-/** Au-delà de cette position, le curseur de filtre est considéré comme ouvert (filtre désactivé). */
-const LPF_OFF_THRESHOLD = 0.995;
+const CUTOFF_SIGNIFICANT_DIGITS = 2;
+/**
+ * Près de sa butée « ouverte », le curseur de filtre désactive le filtre. La marge reste sous un cran
+ * de curseur, pour qu'une flèche du clavier suffise à quitter la butée.
+ */
+const FILTER_OFF_MARGIN = 0.005;
 const PAN_DISPLAY_SCALE = 200;
 const DECIBELS_PER_DECADE = 20;
 
-const RANGES = { gain: GAIN_RANGE, pan: PAN_RANGE, room: ROOM_RANGE } as const;
+const RANGES = {
+  gain: GAIN_RANGE,
+  pan: PAN_RANGE,
+  room: ROOM_RANGE,
+  delay: DELAY_RANGE,
+  distort: DRIVE_RANGE,
+} as const;
 
 function updateMixer(
   project: Project,
@@ -33,12 +50,20 @@ export function setMixerParam(
   return updateMixer(project, trackId, (mixer) => ({ ...mixer, [param]: bounded }));
 }
 
-export function setLpf(project: Project, trackId: string, lpf: number | null): Project {
+export function setFilter(
+  project: Project,
+  trackId: string,
+  param: FilterParam,
+  cutoff: number | null,
+): Project {
   const bounded =
-    lpf === null
+    cutoff === null
       ? null
-      : roundToSignificant(clamp(lpf, LPF_RANGE.min, LPF_RANGE.max), LPF_SIGNIFICANT_DIGITS);
-  return updateMixer(project, trackId, (mixer) => ({ ...mixer, lpf: bounded }));
+      : roundToSignificant(
+          clamp(cutoff, FILTER_RANGE.min, FILTER_RANGE.max),
+          CUTOFF_SIGNIFICANT_DIGITS,
+        );
+  return updateMixer(project, trackId, (mixer) => ({ ...mixer, [param]: bounded }));
 }
 
 export function toggleMute(project: Project, trackId: string): Project {
@@ -49,15 +74,22 @@ export function toggleSolo(project: Project, trackId: string): Project {
   return updateMixer(project, trackId, (mixer) => ({ ...mixer, isSoloed: !mixer.isSoloed }));
 }
 
-/** Position du curseur de filtre (0 → 1) en échelle logarithmique ; filtre désactivé = 1. */
-export function lpfToPosition(lpf: number | null): number {
-  if (lpf === null) return 1;
-  return Math.log(lpf / LPF_RANGE.min) / Math.log(LPF_RANGE.max / LPF_RANGE.min);
+/**
+ * Le curseur d'un filtre (0 → 1) suit une échelle logarithmique. Désactivé, le filtre est
+ * grand ouvert : en haut pour le passe-bas, en bas pour le passe-haut.
+ */
+function openPosition(param: FilterParam): number {
+  return param === "lpf" ? 1 : 0;
 }
 
-export function positionToLpf(position: number): number | null {
-  if (position >= LPF_OFF_THRESHOLD) return null;
-  return LPF_RANGE.min * (LPF_RANGE.max / LPF_RANGE.min) ** clamp(position, 0, 1);
+export function filterToPosition(param: FilterParam, cutoff: number | null): number {
+  if (cutoff === null) return openPosition(param);
+  return Math.log(cutoff / FILTER_RANGE.min) / Math.log(FILTER_RANGE.max / FILTER_RANGE.min);
+}
+
+export function positionToFilter(param: FilterParam, position: number): number | null {
+  if (Math.abs(position - openPosition(param)) <= FILTER_OFF_MARGIN) return null;
+  return FILTER_RANGE.min * (FILTER_RANGE.max / FILTER_RANGE.min) ** clamp(position, 0, 1);
 }
 
 /** « C » au centre, « L40 » ou « R40 » de part et d'autre. */
@@ -67,8 +99,8 @@ export function panLabel(pan: number): string {
   return offset < 0 ? `L${-offset}` : `R${offset}`;
 }
 
-export function lpfLabel(lpf: number | null): string {
-  return lpf === null ? "Off" : `${lpf} Hz`;
+export function filterLabel(cutoff: number | null): string {
+  return cutoff === null ? "Off" : `${cutoff} Hz`;
 }
 
 export function gainToDecibels(gain: number): number {
