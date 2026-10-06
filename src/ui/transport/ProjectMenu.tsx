@@ -1,10 +1,14 @@
 import { ChevronDown } from "lucide-react";
+import { useCanRedo, useCanUndo } from "@/store/selectors";
+import { redoAndRecheck, undoAndRecheck } from "@/ui/app/historyCommands";
 import { Button } from "@/ui/primitives/Button";
 import { Dropdown } from "@/ui/primitives/Menu";
 import { exportProject, importProject, startNewProject } from "@/ui/transport/projectFiles";
 
 /** Remplace le bouton « Share » de la maquette : le partage par URL est hors périmètre de la v0. */
 export function ProjectMenu() {
+  const canUndo = useCanUndo();
+  const canRedo = useCanRedo();
   return (
     <Dropdown
       trigger={
@@ -19,6 +23,8 @@ export function ProjectMenu() {
         </Button>
       }
       items={[
+        { label: "Undo", onSelect: undoAndRecheck, isDisabled: !canUndo, shortcut: "⌘Z" },
+        { label: "Redo", onSelect: redoAndRecheck, isDisabled: !canRedo, shortcut: "⇧⌘Z" },
         { label: "Export JSON", onSelect: exportProject },
         { label: "Import JSON…", onSelect: () => void importProject() },
         { label: "New project", onSelect: startNewProject },

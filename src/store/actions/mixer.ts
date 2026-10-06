@@ -51,13 +51,16 @@ function mixerOf(trackId: string): MixerSettings | undefined {
 
 export function setMixerParam(trackId: string, param: ContinuousMixerParam, value: number): void {
   const before = mixerOf(trackId);
-  updateProject((project) => setMixerParamModel(project, trackId, param, value));
+  updateProject(
+    (project) => setMixerParamModel(project, trackId, param, value),
+    `mixer:${trackId}:${param}`,
+  );
   if (before) logMixerChange(trackId, param, before);
 }
 
 export function setLpf(trackId: string, lpf: number | null): void {
   const before = mixerOf(trackId);
-  updateProject((project) => setLpfModel(project, trackId, lpf));
+  updateProject((project) => setLpfModel(project, trackId, lpf), `mixer:${trackId}:lpf`);
   if (before) logMixerChange(trackId, "lpf", before);
 }
 

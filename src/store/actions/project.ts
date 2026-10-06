@@ -32,7 +32,7 @@ export function newProject(): void {
 
 export function setBpm(bpm: number): void {
   const before = getProject().bpm;
-  updateProject((project) => setBpmModel(project, bpm));
+  updateProject((project) => setBpmModel(project, bpm), "bpm");
   const after = getProject().bpm;
   if (after === before) return;
   logValueChange({

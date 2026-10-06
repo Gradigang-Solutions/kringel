@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   clipAt,
+  clipIds,
   createProject,
   findClip,
   hasAnyClip,
@@ -8,6 +9,7 @@ import {
   setBpm,
   updateClip,
   updateClipOfKind,
+  withProjectId,
 } from "@/model/project";
 import {
   makeCodeClip,
@@ -76,5 +78,27 @@ describe("updateClipOfKind", () => {
       source: 's("bd")',
     }));
     expect(findClip(updated, "c")?.clip).toMatchObject({ source: 's("bd")' });
+  });
+});
+
+describe("withProjectId", () => {
+  it("change l'identifiant sans toucher au contenu", () => {
+    const project = withClip(makeProject(), 0, 0, makeStepsClip());
+    const copy = withProjectId(project, "copy");
+    expect(copy.id).toBe("copy");
+    expect(copy.tracks).toBe(project.tracks);
+  });
+});
+
+describe("clipIds", () => {
+  it("liste les clips de toutes les pistes, sans les slots vides", () => {
+    const project = withClip(
+      withClip(makeProject(), 0, 2, makeStepsClip({ id: "a" })),
+      3,
+      0,
+      makeCodeClip({ id: "b" }),
+    );
+    expect(clipIds(project)).toEqual(["a", "b"]);
+    expect(clipIds(makeProject())).toEqual([]);
   });
 });

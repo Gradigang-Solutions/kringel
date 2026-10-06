@@ -4,6 +4,7 @@ import {
   commitQueued,
   effectiveClipId,
   forgetClip,
+  forgetMissingClips,
   isSceneActive,
   launchClip,
   launchScene,
@@ -103,6 +104,22 @@ describe("forgetClip", () => {
     expect(forgetClip(state, "a")).toMatchObject({
       playingClipIds: { u: "b" },
       queuedClipIds: {},
+      codeChecks: {},
+    });
+  });
+});
+
+describe("forgetMissingClips", () => {
+  it("retire les clips absents du projet et garde les arrêts en attente", () => {
+    const project = withClip(makeProject(), 0, 0, makeStepsClip({ id: "kept" }));
+    const state = makePlayback({
+      playingClipIds: { t: "kept", u: "gone" },
+      queuedClipIds: { v: "gone", w: null },
+      codeChecks: { gone: { status: "valid", source: "x" } },
+    });
+    expect(forgetMissingClips(state, project)).toMatchObject({
+      playingClipIds: { t: "kept" },
+      queuedClipIds: { w: null },
       codeChecks: {},
     });
   });

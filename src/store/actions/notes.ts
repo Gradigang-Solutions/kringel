@@ -18,8 +18,12 @@ import { nextId } from "@/store/ids";
 import { getProject, updateProject } from "@/store/projectStore";
 import { updateUi } from "@/store/uiStore";
 
-function updateNotes(clipId: string, update: (clip: NotesClip) => NotesClip): void {
-  updateProject((project) => updateClipOfKind(project, clipId, "notes", update));
+function updateNotes(
+  clipId: string,
+  update: (clip: NotesClip) => NotesClip,
+  historyKey: string | null = null,
+): void {
+  updateProject((project) => updateClipOfKind(project, clipId, "notes", update), historyKey);
 }
 
 function notesContext(clipId: string): { trackId: string; clip: NotesClip } | null {
@@ -52,12 +56,12 @@ export function addNote(clipId: string, placement: NotePlacement): void {
 }
 
 export function moveNote(clipId: string, noteId: string, start: number, pitch: number): void {
-  updateNotes(clipId, (clip) => moveNoteModel(clip, noteId, start, pitch));
+  updateNotes(clipId, (clip) => moveNoteModel(clip, noteId, start, pitch), `note:${noteId}`);
   logNotesChange(clipId, `move-note:${noteId}`, () => `Moved note to ${noteName(pitch)}`);
 }
 
 export function resizeNote(clipId: string, noteId: string, duration: number): void {
-  updateNotes(clipId, (clip) => resizeNoteModel(clip, noteId, duration));
+  updateNotes(clipId, (clip) => resizeNoteModel(clip, noteId, duration), `note:${noteId}`);
   logNotesChange(clipId, `resize-note:${noteId}`, () => `Note length ${duration} steps`);
 }
 

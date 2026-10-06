@@ -48,6 +48,17 @@ export function hasAnyClip(project: Project): boolean {
   return project.tracks.some((track) => track.clips.some((clip) => clip !== null));
 }
 
+/** Projet ouvert depuis un lien : un nouvel identifiant évite d'écraser la copie locale de l'auteur. */
+export function withProjectId(project: Project, id: string): Project {
+  return { ...project, id };
+}
+
+export function clipIds(project: Project): string[] {
+  return project.tracks.flatMap((track) =>
+    track.clips.flatMap((clip) => (clip === null ? [] : [clip.id])),
+  );
+}
+
 export function findTrack(project: Project, trackId: string): Track | undefined {
   return project.tracks.find((track) => track.id === trackId);
 }

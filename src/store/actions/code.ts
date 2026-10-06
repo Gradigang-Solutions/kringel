@@ -7,8 +7,10 @@ import { getProject, updateProject } from "@/store/projectStore";
 import { updateUi } from "@/store/uiStore";
 
 export function setCodeSource(clipId: string, source: string): void {
-  updateProject((project) =>
-    updateClipOfKind(project, clipId, "code", (clip) => setCodeSourceModel(clip, source)),
+  updateProject(
+    (project) =>
+      updateClipOfKind(project, clipId, "code", (clip) => setCodeSourceModel(clip, source)),
+    `code:${clipId}`,
   );
 }
 

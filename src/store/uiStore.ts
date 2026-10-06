@@ -38,6 +38,8 @@ interface UiStore {
   readonly pendingConversionClipId: string | null;
   /** Premier Play : le contexte audio démarre et les catalogues de samples se téléchargent. */
   readonly isAudioStarting: boolean;
+  /** Incrémenté à chaque annulation ou rétablissement, pour recréer les éditeurs qui gardent leur propre état. */
+  readonly historyRevision: number;
 }
 
 export const MAX_CHANGES = 3;
@@ -55,6 +57,7 @@ export const INITIAL_UI: UiStore = {
   notice: null,
   pendingConversionClipId: null,
   isAudioStarting: false,
+  historyRevision: 0,
 };
 
 export const useUiStore = create<UiStore>()(() => INITIAL_UI);

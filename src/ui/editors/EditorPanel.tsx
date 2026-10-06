@@ -1,6 +1,7 @@
 import { assertNever } from "@/lib/assertNever";
 import { useProjectStore } from "@/store/projectStore";
 import { useEditorClip } from "@/store/selectors";
+import { useUiStore } from "@/store/uiStore";
 import { CodeClipEditor } from "@/ui/editors/code/CodeClipEditor";
 import { EditorHeader } from "@/ui/editors/EditorHeader";
 import { PianoRollEditor } from "@/ui/editors/piano/PianoRollEditor";
@@ -26,6 +27,8 @@ function EditorBody({ located }: { readonly located: LocatedClip }) {
 export function EditorPanel() {
   const located = useEditorClip();
   const scenes = useProjectStore((state) => state.project.scenes);
+  // CodeMirror garde son propre document : l'éditeur est recréé quand une annulation change le clip.
+  const historyRevision = useUiStore((state) => state.historyRevision);
   if (!located) return null;
   const scene = scenes[located.sceneIndex];
   return (
@@ -40,7 +43,7 @@ export function EditorPanel() {
         trackName={located.track.name}
         sceneLabel={`Scene ${located.sceneIndex + 1} · ${scene?.name ?? ""}`}
       />
-      <EditorBody key={located.clip.id} located={located} />
+      <EditorBody key={`${located.clip.id}:${historyRevision}`} located={located} />
     </TrackScope>
   );
 }

@@ -22,8 +22,12 @@ export function soundName(sound: string): string {
   return DRUM_SOUND_NAMES[sound] ?? sound;
 }
 
-function updateSteps(clipId: string, update: (clip: StepsClip) => StepsClip): void {
-  updateProject((project) => updateClipOfKind(project, clipId, "steps", update));
+function updateSteps(
+  clipId: string,
+  update: (clip: StepsClip) => StepsClip,
+  historyKey: string | null = null,
+): void {
+  updateProject((project) => updateClipOfKind(project, clipId, "steps", update), historyKey);
 }
 
 function stepsContext(
@@ -57,7 +61,12 @@ export function setStepVelocity(
   velocity: number,
 ): void {
   const before = stepsContext(clipId, rowId)?.row.velocities[step] ?? 0;
-  updateSteps(clipId, (clip) => setStepVelocityModel(clip, rowId, step, velocity));
+  // Une clé par clip : un tracé de vélocité sur plusieurs pas s'annule en une fois.
+  updateSteps(
+    clipId,
+    (clip) => setStepVelocityModel(clip, rowId, step, velocity),
+    `velocity:${clipId}`,
+  );
   const context = stepsContext(clipId, rowId);
   if (!context) return;
   const after = context.row.velocities[step] ?? 0;

@@ -63,3 +63,11 @@ export function useIsAudioStarting(): boolean {
 export function useHasAnyClip(): boolean {
   return useProjectStore((state) => hasAnyClip(state.project));
 }
+
+export function useCanUndo(): boolean {
+  return useProjectStore((state) => state.history.past.length > 0);
+}
+
+export function useCanRedo(): boolean {
+  return useProjectStore((state) => state.history.future.length > 0);
+}

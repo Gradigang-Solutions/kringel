@@ -1,3 +1,4 @@
+import { clipIds } from "@/model/project";
 import type { Project } from "@/model/types";
 
 export interface CodeError {
@@ -160,4 +161,22 @@ export function isSceneActive(state: PlaybackState, project: Project, sceneIndex
     sceneClips.length > 0 &&
     sceneClips.every(({ trackId, clipId }) => state.playingClipIds[trackId] === clipId)
   );
+}
+
+/** Retire de l'état de lecture les clips absents du projet (après une annulation, par exemple). */
+export function forgetMissingClips(state: PlaybackState, project: Project): PlaybackState {
+  const existing = new Set(clipIds(project));
+  const isKnown = (clipId: string | null) => clipId === null || existing.has(clipId);
+  return {
+    ...state,
+    playingClipIds: Object.fromEntries(
+      Object.entries(state.playingClipIds).filter(([, clipId]) => isKnown(clipId)),
+    ),
+    queuedClipIds: Object.fromEntries(
+      Object.entries(state.queuedClipIds).filter(([, clipId]) => isKnown(clipId)),
+    ),
+    codeChecks: Object.fromEntries(
+      Object.entries(state.codeChecks).filter(([clipId]) => existing.has(clipId)),
+    ),
+  };
 }
