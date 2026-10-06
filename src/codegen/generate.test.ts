@@ -269,6 +269,38 @@ describe("clip de pas", () => {
   });
 });
 
+describe("banque de samples Kringel", () => {
+  it("charge la banque en tête du code dès qu'un clip utilise un de ses kits", () => {
+    const clip = makeStepsClip({ id: "drums", kit: "Fischer808", rows: [makeRow("bd", [0, 8])] });
+    const project = withClip(makeProject(), 0, 0, clip);
+    expect(code(project, playing(project, { 0: "drums" }))).toMatchInlineSnapshot(`
+      "samples('github:Gradigang-Solutions/kringel-samples')
+      setcpm(120/4)
+
+      stack(
+        // Drums · Four on the floor
+        s("bd*2")
+          .bank("Fischer808")
+      )"
+    `);
+  });
+
+  it("omet les lignes dont le son n'existe pas dans le kit, qui ne joueraient rien", () => {
+    const clip = makeStepsClip({
+      id: "drums",
+      kit: "KringelPercussion",
+      rows: [makeRow("bd", [0, 8]), makeRow("ta", [4, 12])],
+    });
+    const project = withClip(makeProject(), 0, 0, clip);
+    expect(code(project, playing(project, { 0: "drums" }))).toContain('s("~ ta ~ ta")');
+  });
+
+  it("garde la ligne quand le clip ne joue pas, pour ne pas réévaluer à chaque lancement", () => {
+    const project = withClip(makeProject(), 0, 0, makeStepsClip({ kit: "KringelTextures" }));
+    expect(code(project, makePlayback())).toMatch(/^samples\(/);
+  });
+});
+
 describe("clip de notes", () => {
   const render = (clip: Parameters<typeof withClip>[3]) => {
     const project = withClip(makeProject(), 2, 0, clip);

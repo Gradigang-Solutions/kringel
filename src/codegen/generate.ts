@@ -3,7 +3,9 @@ import { endsWithLineComment } from "@/codegen/code";
 import { clipControl, mixerControl, type CodeControl } from "@/codegen/controls";
 import { mixerCalls } from "@/codegen/mixer";
 import { CHAIN_INDENT } from "@/codegen/pattern";
-import { BEATS_PER_CYCLE } from "@/model/constants";
+import { call, plainString } from "@/codegen/format";
+import { BEATS_PER_CYCLE, KRINGEL_SAMPLES_URL } from "@/model/constants";
+import { usesKringelSamples } from "@/model/kits";
 import { effectiveClipId, playedSource, type PlaybackState } from "@/model/playback";
 import { hasAnyClip } from "@/model/project";
 import type { Clip, Project, Track } from "@/model/types";
@@ -40,6 +42,13 @@ const NOTHING_PLAYING = "// Launch a clip to hear it here.";
 
 function plain(text: string): Line {
   return { text, info: NO_INFO };
+}
+
+/** Charge la banque Kringel dans le code, pour qu'il sonne pareil collé dans strudel.cc. */
+function samplesLines(project: Project): Line[] {
+  return usesKringelSamples(project)
+    ? [plain(call("samples", plainString(KRINGEL_SAMPLES_URL)))]
+    : [];
 }
 
 function tempoLine(bpm: number): string {
@@ -120,7 +129,14 @@ function projectLines(project: Project, playback: PlaybackState): Line[] {
     .filter((block): block is Line[] => block !== null);
   const body =
     blocks.length > 0 ? joinBlocks(blocks) : [plain(`${BLOCK_INDENT}${NOTHING_PLAYING}`)];
-  return [plain(tempoLine(project.bpm)), plain(""), plain("stack("), ...body, plain(")")];
+  return [
+    ...samplesLines(project),
+    plain(tempoLine(project.bpm)),
+    plain(""),
+    plain("stack("),
+    ...body,
+    plain(")"),
+  ];
 }
 
 /** Génère le code Strudel du projet : celui qu'on évalue et celui qu'on affiche. */

@@ -59,6 +59,7 @@ export function StepsEditor({ clip, trackId }: StepsEditorProps) {
                 <StepRowLabel
                   key={row.id}
                   clipId={clip.id}
+                  kit={clip.kit}
                   row={row}
                   isSelected={row.id === selectedRow?.id}
                 />

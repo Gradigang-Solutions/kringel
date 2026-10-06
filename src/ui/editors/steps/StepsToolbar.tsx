@@ -1,6 +1,6 @@
 import { clipControl } from "@/codegen/controls";
 import { bankCall } from "@/codegen/steps";
-import { DRUM_KITS } from "@/model/constants";
+import { DRUM_KITS, type KitSource } from "@/model/constants";
 import { stepCount } from "@/model/timing";
 import type { ClipCycles, StepsClip } from "@/model/types";
 import { setKit, setStepsLength } from "@/store/actions/steps";
@@ -10,6 +10,11 @@ import { cycleOptions, parseCycles } from "@/ui/editors/cycleOptions";
 import { EditorToolbar } from "@/ui/editors/EditorToolbar";
 import { SwingControl } from "@/ui/editors/steps/SwingControl";
 import { CodeLinked } from "@/ui/shared/CodeLinked";
+
+const KIT_GROUPS: Readonly<Record<KitSource, string>> = {
+  strudel: "Strudel",
+  kringel: "Kringel · CC0",
+};
 
 export interface StepsToolbarProps {
   readonly clip: StepsClip;
@@ -29,7 +34,11 @@ export function StepsToolbar({ clip, trackId }: StepsToolbarProps) {
         <Select
           label="Drum kit"
           value={clip.kit}
-          options={DRUM_KITS.map((kit) => ({ value: kit.id, label: kit.id }))}
+          options={DRUM_KITS.map((kit) => ({
+            value: kit.id,
+            label: kit.id,
+            group: KIT_GROUPS[kit.source],
+          }))}
           onChange={(kit) => setKit(clip.id, kit)}
         />
         <span className="font-mono text-caption text-track">{bankCall(clip.kit)}</span>

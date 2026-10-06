@@ -10,6 +10,7 @@ import {
   SWING_RANGE,
   SWING_SLICES_PER_CYCLE,
 } from "@/model/constants";
+import { isSoundInKit } from "@/model/kits";
 import type { StepRow, StepsClip } from "@/model/types";
 
 /** Les sons de batterie n'ont pas de durée : la grille se réduit au plus grand pas commun. */
@@ -84,8 +85,11 @@ function soundPatterns(audibleRows: readonly StepRow[], cycles: number): string[
   return [...combined, ...separate];
 }
 
+/** Lignes qui sonnent : ni muettes, ni vides, et dont le son existe dans le kit du clip. */
 export function audibleRows(clip: StepsClip): StepRow[] {
-  return clip.rows.filter((row) => !row.isMuted && hitSteps(row).length > 0);
+  return clip.rows.filter(
+    (row) => !row.isMuted && hitSteps(row).length > 0 && isSoundInKit(clip.kit, row.sound),
+  );
 }
 
 export function bankCall(kit: string): string {

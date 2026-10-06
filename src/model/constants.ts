@@ -74,24 +74,86 @@ export const SWING_RANGE = { min: 0, max: 0.5 } as const;
 /** Le swing travaille par paires de pas : le second de chaque paire est retardé. */
 export const SWING_SLICES_PER_CYCLE = STEPS_PER_CYCLE / 2;
 
+/**
+ * Banque de samples CC0 de Kringel, hébergée sur GitHub (raw.githubusercontent.com sert les fichiers
+ * avec CORS) : le code généré qui l'utilise sonne pareil une fois collé dans strudel.cc.
+ */
+export const KRINGEL_SAMPLES_URL = "github:Gradigang-Solutions/kringel-samples";
+
+/** D'où viennent les sons d'un kit : chargés par défaut sur strudel.cc, ou par `samples()` depuis la banque Kringel. */
+export type KitSource = "strudel" | "kringel";
+
 export const DRUM_KITS = [
   {
     id: "RolandTR909",
+    source: "strudel",
     sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "mt", "ht", "cr", "rd"],
   },
   {
     id: "RolandTR808",
+    source: "strudel",
     sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "mt", "ht", "cr", "cb", "sh"],
   },
   {
     id: "RolandTR707",
+    source: "strudel",
     sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "mt", "ht", "cr", "cb", "tb"],
   },
   {
     id: "LinnDrum",
+    source: "strudel",
     sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "mt", "ht", "cr", "rd", "cb", "sh"],
   },
-] as const;
+  {
+    id: "Fischer808",
+    source: "kringel",
+    sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "mt", "ht", "cr", "cb", "sh"],
+  },
+  {
+    id: "SonicPiAcoustic",
+    source: "kringel",
+    sounds: ["bd", "sd", "hh", "oh", "lt", "mt", "ht", "cr", "rd", "cb"],
+  },
+  {
+    id: "SonicPiElectro",
+    source: "kringel",
+    sounds: ["bd", "sd", "hh", "oh", "cp", "rim", "lt", "cr", "cb"],
+  },
+  {
+    id: "KringelPercussion",
+    source: "kringel",
+    sounds: [
+      "ta",
+      "na",
+      "ghe",
+      "tun",
+      "ke",
+      "te",
+      "clap",
+      "snap",
+      "stomp",
+      "chest",
+      "belly",
+      "heel",
+    ],
+  },
+  {
+    id: "KringelTextures",
+    source: "kringel",
+    sounds: [
+      "drone",
+      "choir",
+      "glass",
+      "swoosh",
+      "pad",
+      "hiss",
+      "scratch",
+      "rewind",
+      "glitch",
+      "robot",
+    ],
+  },
+] as const satisfies readonly { id: string; source: KitSource; sounds: readonly string[] }[];
 
 export const DEFAULT_KIT = "RolandTR909";
 export const DEFAULT_DRUM_SOUNDS = ["bd", "sd", "hh", "cp"] as const;
@@ -111,6 +173,28 @@ export const DRUM_SOUND_NAMES: Readonly<Record<string, string>> = {
   cb: "Cowbell",
   sh: "Shaker",
   tb: "Tambourine",
+  ta: "Tabla ta",
+  na: "Tabla na",
+  ghe: "Tabla ghe",
+  tun: "Tabla tun",
+  ke: "Tabla ke",
+  te: "Tabla te",
+  clap: "Hand clap",
+  snap: "Finger snap",
+  stomp: "Stomp",
+  chest: "Chest thump",
+  belly: "Belly slap",
+  heel: "Heel",
+  drone: "Drone",
+  choir: "Choir",
+  glass: "Glass hum",
+  swoosh: "Swoosh",
+  pad: "Pad",
+  hiss: "Vinyl hiss",
+  scratch: "Scratch",
+  rewind: "Rewind",
+  glitch: "Glitch",
+  robot: "Robot",
 };
 
 export const SOUND_SOURCES = ["synth", "sample"] as const;

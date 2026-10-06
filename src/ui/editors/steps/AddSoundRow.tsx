@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { DRUM_KITS } from "@/model/constants";
+import { kitSounds } from "@/model/kits";
 import type { StepsClip } from "@/model/types";
 import { addStepRow, soundName } from "@/store/actions/steps";
 import { Button } from "@/ui/primitives/Button";
@@ -8,9 +8,8 @@ import { Dropdown } from "@/ui/primitives/Menu";
 const MAX_SUGGESTIONS = 5;
 
 function unusedSounds(clip: StepsClip): string[] {
-  const kitSounds: readonly string[] = DRUM_KITS.find((kit) => kit.id === clip.kit)?.sounds ?? [];
   const used = new Set(clip.rows.map((row) => row.sound));
-  return kitSounds.filter((sound) => !used.has(sound));
+  return kitSounds(clip.kit).filter((sound) => !used.has(sound));
 }
 
 /** Ajouter un son : menu complet, ou suggestions rapides tirées du kit. */

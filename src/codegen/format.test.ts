@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { call, formatNumber, method, quote } from "@/codegen/format";
+import { call, formatNumber, method, plainString, quote } from "@/codegen/format";
 
 describe("formatNumber", () => {
   it("arrondit à deux décimales sans zéros inutiles", () => {
@@ -14,5 +14,12 @@ describe("appels", () => {
   it("écrit les appels et les chaînes", () => {
     expect(call("s", quote("bd"))).toBe('s("bd")');
     expect(method("gain", "0.8")).toBe(".gain(0.8)");
+  });
+});
+
+describe("plainString", () => {
+  it("écrit une chaîne entre apostrophes, que Strudel ne lit pas comme de la mini-notation", () => {
+    expect(plainString("github:user/repo")).toBe("'github:user/repo'");
+    expect(plainString("it's a \\ path")).toBe("'it\\'s a \\\\ path'");
   });
 });

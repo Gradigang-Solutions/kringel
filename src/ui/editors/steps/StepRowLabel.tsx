@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { isSoundInKit } from "@/model/kits";
 import type { StepRow } from "@/model/types";
 import { removeStepRow, selectRow, soundName, toggleRowMute } from "@/store/actions/steps";
 import { ContextMenuArea } from "@/ui/primitives/Menu";
@@ -6,12 +7,14 @@ import { STEP_ROW_HEIGHT } from "@/ui/editors/steps/stepGeometry";
 
 export interface StepRowLabelProps {
   readonly clipId: string;
+  readonly kit: string;
   readonly row: StepRow;
   readonly isSelected: boolean;
 }
 
-export function StepRowLabel({ clipId, row, isSelected }: StepRowLabelProps) {
+export function StepRowLabel({ clipId, kit, row, isSelected }: StepRowLabelProps) {
   const name = soundName(row.sound);
+  const isMissing = !isSoundInKit(kit, row.sound);
   return (
     <ContextMenuArea
       items={[{ label: `Remove ${name}`, onSelect: () => removeStepRow(clipId, row.id) }]}
@@ -30,8 +33,17 @@ export function StepRowLabel({ clipId, row, isSelected }: StepRowLabelProps) {
           isSelected ? "bg-gray-225" : "hover:bg-gray-195",
         )}
       >
-        <span className="flex-1 truncate text-emphasis font-medium">{name}</span>
-        <span className="rounded-3 bg-gray-235 px-1.25 py-px font-mono text-caption text-fg-2 max-md:hidden">
+        <span className={cn("flex-1 truncate text-emphasis font-medium", isMissing && "text-fg-3")}>
+          {name}
+        </span>
+        {/* Un son absent du kit ne joue rien : Strudel ne trouve pas de sample sous ce nom. */}
+        <span
+          title={isMissing ? `${kit} has no ${row.sound}: this row is silent` : undefined}
+          className={cn(
+            "rounded-3 bg-gray-235 px-1.25 py-px font-mono text-caption max-md:hidden",
+            isMissing ? "text-error-fg line-through" : "text-fg-2",
+          )}
+        >
           {row.sound}
         </span>
         <button
