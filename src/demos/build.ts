@@ -29,7 +29,7 @@ import type {
   Track,
 } from "@/model/types";
 
-/** Identifiants stables pour les démos : « demo-techno-1 », « demo-techno-2 »… */
+/** Identifiants stables pour les démos : « demo-warehouse-1 », « demo-warehouse-2 »… */
 export function demoIds(demoId: string): IdGenerator {
   let counter = 0;
   return () => {

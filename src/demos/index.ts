@@ -1,7 +1,7 @@
 import { acidLine } from "@/demos/acidLine";
 import { dustyKeys } from "@/demos/dustyKeys";
-import { firstTechno } from "@/demos/firstTechno";
 import { slowTide } from "@/demos/slowTide";
+import { warehouse } from "@/demos/warehouse";
 import type { Project } from "@/model/types";
 
 export interface Demo {
@@ -10,7 +10,7 @@ export interface Demo {
 }
 
 export const DEMOS: readonly Demo[] = [
-  { project: firstTechno, genre: "Techno" },
+  { project: warehouse, genre: "Peak-time techno" },
   { project: dustyKeys, genre: "Lo-fi hip-hop" },
   { project: acidLine, genre: "Acid techno" },
   { project: slowTide, genre: "Ambient" },
