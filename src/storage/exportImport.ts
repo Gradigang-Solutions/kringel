@@ -3,7 +3,7 @@ import { PROJECT_SCHEMA_VERSION } from "@/model/constants";
 import type { Project } from "@/model/types";
 import { projectSchema } from "@/storage/schema";
 
-const FILE_FORMAT = "kringle-project";
+const FILE_FORMAT = "kringel-project";
 const JSON_INDENT = 2;
 
 export type ImportResult =
@@ -29,7 +29,7 @@ export function projectFileName(project: Project): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  return `${slug === "" ? "project" : slug}.kringle.json`;
+  return `${slug === "" ? "project" : slug}.kringel.json`;
 }
 
 function parseJson(text: string): unknown {
@@ -44,15 +44,15 @@ function parseJson(text: string): unknown {
 /** Valide un fichier exporté : format, version, puis contenu du projet. */
 export function parseProjectFile(text: string): ImportResult {
   const envelope = envelopeSchema.safeParse(parseJson(text));
-  if (!envelope.success) return { isOk: false, error: "This file is not a Kringle project." };
+  if (!envelope.success) return { isOk: false, error: "This file is not a Kringel project." };
   if (envelope.data.version > PROJECT_SCHEMA_VERSION) {
-    return { isOk: false, error: "This project was made with a newer version of Kringle." };
+    return { isOk: false, error: "This project was made with a newer version of Kringel." };
   }
   if (envelope.data.version < PROJECT_SCHEMA_VERSION) {
     return { isOk: false, error: `Unsupported project version ${envelope.data.version}.` };
   }
   const project = projectSchema.safeParse(envelope.data.project);
   if (!project.success)
-    return { isOk: false, error: "This Kringle project is damaged and can't be opened." };
+    return { isOk: false, error: "This Kringel project is damaged and can't be opened." };
   return { isOk: true, project: project.data };
 }

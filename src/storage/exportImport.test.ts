@@ -28,8 +28,8 @@ describe("export puis import", () => {
   });
 
   it("nomme le fichier d'après le projet", () => {
-    expect(projectFileName(project)).toBe("night-drive.kringle.json");
-    expect(projectFileName(makeProject({ name: "!!!" }))).toBe("project.kringle.json");
+    expect(projectFileName(project)).toBe("night-drive.kringel.json");
+    expect(projectFileName(makeProject({ name: "!!!" }))).toBe("project.kringel.json");
   });
 });
 
@@ -37,33 +37,33 @@ describe("rejet à l'import", () => {
   it("refuse un fichier qui n'est pas du JSON", () => {
     expect(parseProjectFile("pas du json")).toEqual({
       isOk: false,
-      error: "This file is not a Kringle project.",
+      error: "This file is not a Kringel project.",
     });
   });
 
-  it("refuse un JSON qui n'est pas un projet Kringle", () => {
+  it("refuse un JSON qui n'est pas un projet Kringel", () => {
     expect(parseProjectFile('{"hello": 1}').isOk).toBe(false);
   });
 
   it("refuse une version plus récente ou inconnue", () => {
-    const newer = JSON.stringify({ format: "kringle-project", version: 99, project });
-    const older = JSON.stringify({ format: "kringle-project", version: 0, project });
+    const newer = JSON.stringify({ format: "kringel-project", version: 99, project });
+    const older = JSON.stringify({ format: "kringel-project", version: 0, project });
     expect(parseProjectFile(newer)).toEqual({
       isOk: false,
-      error: "This project was made with a newer version of Kringle.",
+      error: "This project was made with a newer version of Kringel.",
     });
     expect(parseProjectFile(older).isOk).toBe(false);
   });
 
   it("refuse un projet abîmé", () => {
     const damaged = JSON.stringify({
-      format: "kringle-project",
+      format: "kringel-project",
       version: 1,
       project: { ...project, tracks: [{ ...project.tracks[0], clips: [] }] },
     });
     expect(parseProjectFile(damaged)).toEqual({
       isOk: false,
-      error: "This Kringle project is damaged and can't be opened.",
+      error: "This Kringel project is damaged and can't be opened.",
     });
   });
 
@@ -71,7 +71,7 @@ describe("rejet à l'import", () => {
     const badClip = { ...makeNotesClip(), scale: "klingon", cycles: 3 };
     const bad = withClip(makeProject(), 0, 0, makeNotesClip());
     const text = JSON.stringify({
-      format: "kringle-project",
+      format: "kringel-project",
       version: 1,
       project: {
         ...bad,

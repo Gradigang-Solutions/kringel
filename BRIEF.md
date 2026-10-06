@@ -1,4 +1,4 @@
-# Kringle — Brief produit
+# Kringel — Brief produit
 
 > Nom de travail. Domaine et marque non vérifiés.
 
@@ -8,7 +8,7 @@ Une web app musicale qui offre une interface graphique par-dessus [Strudel](http
 
 ## Pourquoi
 
-Strudel est puissant et sonne bien, mais sa syntaxe arrête beaucoup de curieux. Les DAW classiques, eux, cachent toute la logique musicale derrière l'interface. Kringle se place entre les deux : aussi accessible qu'une grille de clips, aussi transparent que du code.
+Strudel est puissant et sonne bien, mais sa syntaxe arrête beaucoup de curieux. Les DAW classiques, eux, cachent toute la logique musicale derrière l'interface. Kringel se place entre les deux : aussi accessible qu'une grille de clips, aussi transparent que du code.
 
 Ce n'est pas un concurrent de FL Studio ou d'Ableton. Pas d'enregistrement audio, pas de VST, pas de mastering.
 

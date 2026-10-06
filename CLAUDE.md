@@ -1,4 +1,4 @@
-# Kringle
+# Kringel
 
 Interface graphique web par-dessus Strudel : grille de clips en boucle, mixer, et panneau affichant le code Strudel généré. Le contexte produit complet et le périmètre sont dans `BRIEF.md` : le lire avant toute décision de conception.
 

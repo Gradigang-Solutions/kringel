@@ -16,17 +16,17 @@ interface Setting {
 
 const LAST_PROJECT_KEY = "lastProjectId";
 
-class KringleDatabase extends Dexie {
+class KringelDatabase extends Dexie {
   projects!: EntityTable<StoredProject, "id">;
   settings!: EntityTable<Setting, "key">;
 
   constructor() {
-    super("kringle");
+    super("kringel");
     this.version(1).stores({ projects: "id, savedAt", settings: "key" });
   }
 }
 
-const db = new KringleDatabase();
+const db = new KringelDatabase();
 
 export async function saveProject(project: Project, now: number): Promise<void> {
   await db.transaction("rw", db.projects, db.settings, async () => {

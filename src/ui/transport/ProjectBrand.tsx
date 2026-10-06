@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { TRACK_PRESETS } from "@/model/constants";
 import { renameProject } from "@/store/actions/project";
 import { useProjectStore, type SaveStatus } from "@/store/projectStore";
-import { TrackScope } from "@/ui/shared/TrackScope";
 
 const SAVE_LABELS: Readonly<Record<SaveStatus, string>> = {
   never: "Not saved yet",
@@ -10,14 +8,9 @@ const SAVE_LABELS: Readonly<Record<SaveStatus, string>> = {
   saved: "Saved",
 };
 
+/** Même fichier que le favicon, pour que le logo n'ait qu'une seule source. */
 function Logo() {
-  return (
-    <div className="grid size-4.5 shrink-0 grid-cols-2 gap-0.5" aria-hidden>
-      {TRACK_PRESETS.map((preset) => (
-        <TrackScope key={preset.name} color={preset.color} className="rounded-2 bg-track" />
-      ))}
-    </div>
-  );
+  return <img src="/favicon.svg" alt="" className="size-4.5 shrink-0" aria-hidden />;
 }
 
 export function ProjectBrand() {
@@ -27,7 +20,7 @@ export function ProjectBrand() {
   return (
     <div className="flex min-w-0 items-center gap-3">
       <Logo />
-      <span className="text-brand font-semibold tracking-tight">Kringle</span>
+      <span className="text-brand font-semibold tracking-tight">Kringel</span>
       <span className="h-4 w-px bg-gray-300" aria-hidden />
       <input
         aria-label="Project name"
