@@ -12,6 +12,7 @@ import {
   recordCodeCheck,
   setPlaying,
   stopTrack,
+  withoutQueued,
 } from "@/model/playback";
 import {
   makeCodeClip,
@@ -80,6 +81,24 @@ describe("launchScene", () => {
       1,
     );
     expect(state.queuedClipIds).toEqual({ [trackIdAt(project, 0)]: "drums", [bassTrack]: null });
+  });
+});
+
+describe("withoutQueued", () => {
+  it("garde ce qui joue et oublie les lancements en attente", () => {
+    const queued = launchClip(
+      makePlayback({ isPlaying: true, playingClipIds: { t: "a" } }),
+      "t",
+      "b",
+    );
+    const state = withoutQueued(queued);
+    expect(state.queuedClipIds).toEqual({});
+    expect(effectiveClipId(state, "t")).toBe("a");
+  });
+
+  it("renvoie le même état quand rien n'est en attente", () => {
+    const state = makePlayback({ isPlaying: true, playingClipIds: { t: "a" } });
+    expect(withoutQueued(state)).toBe(state);
   });
 });
 

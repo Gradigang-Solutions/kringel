@@ -1,12 +1,10 @@
-import { evaluate, isPattern, type Pattern } from "@strudel/core";
 import { transpiler } from "@strudel/transpiler";
+import { evaluatePattern } from "@/engine/evaluatePattern";
 import { hapPitch } from "@/engine/pitch";
-import { ensureScope } from "@/engine/scope";
 import type { PreviewNote } from "@/engine/types";
 import type { CodeError } from "@/model/playback";
 
 const LOCATION_SUFFIX = /\s*\(\d+:\d+\)$/;
-const NOT_A_PATTERN = 'The code must produce a pattern, like s("bd") or note("c3").';
 
 function readLocation(error: unknown): { line: number; column: number } {
   if (typeof error === "object" && error !== null && "loc" in error) {
@@ -21,13 +19,6 @@ function readLocation(error: unknown): { line: number; column: number } {
 function toCodeError(error: unknown): CodeError {
   const message = error instanceof Error ? error.message : String(error);
   return { ...readLocation(error), message: message.replace(LOCATION_SUFFIX, "") };
-}
-
-async function evaluatePattern(source: string): Promise<Pattern> {
-  await ensureScope();
-  const { pattern } = await evaluate(source, transpiler);
-  if (!isPattern(pattern)) throw new Error(NOT_A_PATTERN);
-  return pattern;
 }
 
 /** Vérifie la source d'un clip de code : syntaxe, évaluation, puis interrogation d'un cycle. */

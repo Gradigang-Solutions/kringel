@@ -16,7 +16,7 @@ import { showNotice } from "@/store/actions/project";
 import { commitQueued, setPlaying } from "@/store/actions/transport";
 import { getPlayback, usePlaybackStore } from "@/store/playbackStore";
 import { getProject, useProjectStore } from "@/store/projectStore";
-import { getGeneratedCode } from "@/store/selectors";
+import { getGeneratedCode, getPlayingCode } from "@/store/selectors";
 import { getUi, updateUi } from "@/store/uiStore";
 import { projectSlug } from "@/storage/exportImport";
 import { downloadBlob } from "@/ui/shared/files";
@@ -113,8 +113,9 @@ function commitAt(cycle: number | null): void {
 function syncEngine(): void {
   if (!getPlayback().isPlaying) return;
   const code = getGeneratedCode().text;
+  const playingCode = getPlayingCode();
   evaluationQueue = evaluationQueue.then(async () => {
-    const update = await setCode(code);
+    const update = await setCode(code, playingCode);
     if (update.error !== null) showNotice(update.error);
     commitAt(update.appliesAtCycle);
   });

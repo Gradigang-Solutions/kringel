@@ -110,6 +110,11 @@ export function commitQueued(state: PlaybackState): PlaybackState {
   return { ...state, playingClipIds: playing, queuedClipIds: {} };
 }
 
+/** État de ce qui joue déjà, sans les lancements en attente. */
+export function withoutQueued(state: PlaybackState): PlaybackState {
+  return Object.keys(state.queuedClipIds).length === 0 ? state : { ...state, queuedClipIds: {} };
+}
+
 export function setPlaying(state: PlaybackState, isPlaying: boolean): PlaybackState {
   const committed = isPlaying ? state : commitQueued(state);
   return { ...committed, isPlaying };

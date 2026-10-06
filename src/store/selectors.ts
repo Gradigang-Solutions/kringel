@@ -2,7 +2,12 @@ import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { sharesControl, type CodeControl } from "@/codegen/controls";
 import { generateCode, type GeneratedCode } from "@/codegen/generate";
-import { clipPlayStatus, type ClipPlayStatus, type PlaybackState } from "@/model/playback";
+import {
+  clipPlayStatus,
+  withoutQueued,
+  type ClipPlayStatus,
+  type PlaybackState,
+} from "@/model/playback";
 import { findClip, findTrack, hasAnyClip, type LocatedClip } from "@/model/project";
 import type { Project, Track } from "@/model/types";
 import { getPlayback, usePlaybackStore } from "@/store/playbackStore";
@@ -21,6 +26,14 @@ export function selectGeneratedCode(project: Project, playback: PlaybackState): 
 
 export function getGeneratedCode(): GeneratedCode {
   return selectGeneratedCode(getProject(), getPlayback());
+}
+
+/** Code de ce qui joue déjà, sans les lancements en attente : il joue jusqu'au cycle suivant. */
+export function getPlayingCode(): string {
+  const playback = getPlayback();
+  const playing = withoutQueued(playback);
+  if (playing === playback) return getGeneratedCode().text;
+  return generateCode(getProject(), playing).text;
 }
 
 export function useGeneratedCode(): GeneratedCode {
