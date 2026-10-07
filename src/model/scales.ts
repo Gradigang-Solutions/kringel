@@ -4,14 +4,11 @@ import {
   SCALE_MODES,
   SEMITONES_PER_OCTAVE,
 } from "@/model/constants";
+import { modulo } from "@/lib/math";
 import type { PitchClass, ScaleModeId } from "@/model/types";
 
 /** En MIDI, l'octave -1 commence à 0 : do4 = 60. */
 const MIDI_OCTAVE_OFFSET = 1;
-
-function modulo(value: number, divisor: number): number {
-  return ((value % divisor) + divisor) % divisor;
-}
 
 export function pitchClassOf(pitch: number): PitchClass {
   return modulo(pitch, SEMITONES_PER_OCTAVE);

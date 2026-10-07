@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "@/ui/app/App";
 import { startWithProject } from "@/ui/app/openSharedProject";
+import { dismissSplash } from "@/ui/splash/dismissSplash";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Élément #root introuvable dans index.html");
@@ -15,4 +16,5 @@ void startWithProject().then(() => {
       <App />
     </StrictMode>,
   );
+  dismissSplash();
 });

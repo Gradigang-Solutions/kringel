@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clamp, gcd, range, roundTo, roundToSignificant } from "@/lib/math";
+import { clamp, gcd, modulo, range, roundTo, roundToSignificant } from "@/lib/math";
 
 describe("clamp", () => {
   it("borne la valeur entre min et max", () => {
@@ -21,6 +21,14 @@ describe("roundToSignificant", () => {
     expect(roundToSignificant(812.3, 2)).toBe(810);
     expect(roundToSignificant(12345, 2)).toBe(12000);
     expect(roundToSignificant(0, 2)).toBe(0);
+  });
+});
+
+describe("modulo", () => {
+  it("renvoie un reste positif même pour une valeur négative", () => {
+    expect(modulo(13, 12)).toBe(1);
+    expect(modulo(-1, 12)).toBe(11);
+    expect(modulo(-12, 12)).toBe(0);
   });
 });
 

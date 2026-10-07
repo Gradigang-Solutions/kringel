@@ -5,18 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Kringel</title>
+    <!--
+      Splash screen « Le cycle » (maquette Kringel — Splash screens.html) : un quart de tour par temps à
+      120 BPM, soit une mesure de 2 s. Le style est inline parce qu'il doit s'afficher avant le bundle et
+      theme.css ; les couleurs recopient donc les tokens de theme.css (gray-115, fg-2, gray-520, bokeh-*),
+      à garder synchronisées. La sortie est déclenchée sur le temps fort par src/ui/splash/dismissSplash.ts,
+      qui s'appuie sur les keyframes k2-turn et k2-land.
+    -->
+    <style>
+      .k2 {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        background: oklch(0.115 0.004 260);
+        --s: clamp(48px, 18vmin, 96px);
+      }
+      .k2-mark {
+        position: relative;
+        width: var(--s);
+        height: var(--s);
+      }
+      .k2-steps,
+      .k2-rot {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .k2-label {
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        margin-top: calc(var(--s) * 0.2 + 16px);
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font:
+          500 11px/1 "Geist Mono Variable",
+          ui-monospace,
+          monospace;
+        color: oklch(0.72 0.008 260);
+      }
+      .k2-rot {
+        transform-origin: 50% 50%;
+        animation: k2-turn 2s cubic-bezier(0.5, 0, 0.3, 1.35) infinite;
+      }
+      .k2-ring {
+        stroke: oklch(0.94 0.008 260 / 0.1);
+        stroke-width: 0.35;
+      }
+      .k2-s {
+        fill: oklch(0.52 0.008 260);
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: k2-step 2s linear infinite;
+      }
+      .k2-s1 {
+        color: oklch(0.66 0.2 30);
+      }
+      .k2-s2 {
+        color: oklch(0.8 0.15 75);
+        animation-delay: -1.5s;
+      }
+      .k2-s3 {
+        color: oklch(0.86 0.11 205);
+        animation-delay: -1s;
+      }
+      .k2-s4 {
+        color: oklch(0.7 0.17 300);
+        animation-delay: -0.5s;
+      }
+      @keyframes k2-turn {
+        0%,
+        16% {
+          transform: rotate(0deg);
+        }
+        25%,
+        41% {
+          transform: rotate(90deg);
+        }
+        50%,
+        66% {
+          transform: rotate(180deg);
+        }
+        75%,
+        91% {
+          transform: rotate(270deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes k2-step {
+        0% {
+          fill: currentColor;
+          transform: scale(1.8);
+        }
+        10%,
+        22% {
+          fill: currentColor;
+          transform: scale(1.2);
+        }
+        30%,
+        100% {
+          fill: oklch(0.52 0.008 260);
+          transform: scale(1);
+        }
+      }
+      /* Sortie « prêt » : dernier quart de tour, on retombe sur le 1, puis on traverse. */
+      .k2.is-ready {
+        pointer-events: none;
+        animation: k2-out 0.4s linear forwards;
+      }
+      .k2.is-ready .k2-rot {
+        animation: k2-land 0.4s cubic-bezier(0.4, 0, 0.3, 1.4) forwards;
+      }
+      .k2.is-ready .k2-s {
+        animation: k2-off 0.18s forwards;
+      }
+      .k2.is-ready .k2-s1 {
+        animation: k2-one 0.4s forwards;
+      }
+      @keyframes k2-out {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      @keyframes k2-land {
+        0% {
+          transform: rotate(-90deg);
+        }
+        45% {
+          transform: rotate(0deg) scale(1);
+        }
+        100% {
+          transform: rotate(0deg) scale(1.45);
+        }
+      }
+      @keyframes k2-off {
+        to {
+          opacity: 0;
+        }
+      }
+      @keyframes k2-one {
+        0% {
+          fill: currentColor;
+          transform: scale(1);
+        }
+        45% {
+          fill: currentColor;
+          transform: scale(2.6);
+          opacity: 1;
+        }
+        100% {
+          fill: currentColor;
+          transform: scale(2.6);
+          opacity: 0;
+        }
+      }
+      @keyframes k2-rm {
+        from {
+          opacity: 0.45;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .k2 * {
+          animation: none !important;
+        }
+        .k2 .k2-s1 {
+          fill: currentColor;
+        }
+        .k2 .k2-steps {
+          animation: k2-rm 2s ease-in-out infinite alternate !important;
+        }
+        .k2.is-ready {
+          animation: k2-off 0.2s forwards;
+        }
+      }
+    </style>
   </head>
   <body>
-    <!-- Affiché pendant le téléchargement du bundle et la lecture du projet sauvegardé ; React le remplace au premier rendu. -->
-    <div id="root">
-      <div
-        class="flex h-full items-center justify-center"
-        role="status"
-        aria-label="Loading Kringel"
-      >
-        <img src="/favicon.svg" alt="" class="size-12 animate-pulse motion-reduce:animate-none" />
+    <div id="root"></div>
+    <!-- Hors de #root : React ne l'écrase pas, et la sortie joue par-dessus l'app déjà rendue. -->
+    <div id="splash" class="k2" role="status" aria-label="Loading Kringel">
+      <div class="k2-mark">
+        <svg class="k2-steps" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle class="k2-ring" cx="16" cy="16" r="21" />
+          <circle class="k2-s k2-s1" cx="16" cy="-5" r="1.3" />
+          <circle class="k2-s k2-s2" cx="37" cy="16" r="1.3" />
+          <circle class="k2-s k2-s3" cx="16" cy="37" r="1.3" />
+          <circle class="k2-s k2-s4" cx="-5" cy="16" r="1.3" />
+        </svg>
+        <!-- Même fichier que le favicon et le logo de la barre du haut : une seule source pour le logo. -->
+        <img class="k2-rot" src="/favicon.svg" alt="" />
+        <span class="k2-label">What are we cooking today?</span>
       </div>
     </div>
+    <script>
+      // Tirée avant le premier rendu pour que la phrase ne change pas sous les yeux.
+      (function () {
+        var phrases = [
+          "Let him cook…",
+          "What are we cooking today?",
+          "Preheating the oven…",
+          "Kneading the loops…",
+          "Letting the dough rise…",
+          "Twisting the dough…",
+          "Something's in the oven…",
+          "Seasoning the hi-hats…",
+          "Chef's warming up the kick…",
+          "Counting you in… 1, 2, 3, 4",
+          "Fresh beats, straight from the oven",
+          "Mise en place for your loops…",
+        ];
+        var label = document.querySelector("#splash .k2-label");
+        if (label) label.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
