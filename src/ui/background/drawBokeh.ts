@@ -21,17 +21,19 @@ const GLOW_SPOTS: readonly GlowSpot[] = [
   { band: "mid", x: 0.85, y: 0.55, radius: 0.5 },
   { band: "high", x: 0.55, y: 0, radius: 0.45 },
 ];
-const GLOW_MAX_ALPHA = 0.32;
+const GLOW_MAX_ALPHA = 0.16;
 /**
- * Arrêts du dégradé d'un halo : le bord est un peu plus vif que le centre, comme le flou
- * d'objectif d'une lumière (bokeh), puis s'efface.
+ * Arrêts du dégradé d'un halo : retombée progressive depuis le centre, sans bord marqué,
+ * pour une lumière diffuse qui reste à l'arrière-plan.
  */
 const HALO_STOPS: readonly (readonly [offset: number, share: number])[] = [
-  [0, 0.45],
-  [0.72, 0.6],
-  [0.88, 0.3],
+  [0, 0.3],
+  [0.3, 0.2],
+  [0.6, 0.08],
   [1, 0],
 ];
+/** Le halo est dessiné plus large que sa taille simulée : même énergie, lumière plus étalée. */
+const HALO_SPREAD = 1.6;
 
 function drawGlow(
   context: CanvasRenderingContext2D,
@@ -62,7 +64,7 @@ function drawHalo(
   if (alpha <= 0) return;
   const x = halo.x * size.width;
   const y = halo.y * size.height;
-  const radius = halo.radius * scale * Math.min(size.width, size.height);
+  const radius = halo.radius * scale * HALO_SPREAD * Math.min(size.width, size.height);
   const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
   for (const [offset, share] of HALO_STOPS) {
     gradient.addColorStop(offset, withAlpha(color, alpha * share));

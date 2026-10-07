@@ -54,10 +54,10 @@
   --color-syntax-number: oklch(0.8 0.09 185);
 
   /* Halos du fond pendant la lecture, par famille de son : graves chauds, aigus froids, notes violettes */
-  --color-bokeh-low: oklch(0.66 0.2 30);
-  --color-bokeh-mid: oklch(0.8 0.15 75);
-  --color-bokeh-high: oklch(0.86 0.11 205);
-  --color-bokeh-tonal: oklch(0.7 0.17 300);
+  --color-bokeh-low: oklch(0.66 0.13 30);
+  --color-bokeh-mid: oklch(0.78 0.1 75);
+  --color-bokeh-high: oklch(0.84 0.07 205);
+  --color-bokeh-tonal: oklch(0.68 0.11 300);
   --color-white: oklch(1 0 0);
   --color-black: oklch(0 0 0);
   --color-transparent: transparent;
