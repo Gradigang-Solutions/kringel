@@ -3,6 +3,8 @@ import { loadProject } from "@/store/actions/project";
 import { nextId } from "@/store/ids";
 import { checkAllCodeClips, stopPlayback } from "@/ui/app/playbackController";
 import { DemoCard } from "@/ui/demos/DemoCard";
+import { CREATOR_NAME, CREATOR_URL, SOURCE_URL } from "@/ui/shared/creator";
+import { ExternalLink } from "@/ui/shared/ExternalLink";
 
 function openDemo(demo: Demo): void {
   stopPlayback();
@@ -27,6 +29,10 @@ export function DemoProjects() {
           <DemoCard key={demo.project.id} demo={demo} onOpen={() => openDemo(demo)} />
         ))}
       </div>
+      <p className="text-small text-fg-3">
+        Made by <ExternalLink href={CREATOR_URL}>{CREATOR_NAME}</ExternalLink> ·{" "}
+        <ExternalLink href={SOURCE_URL}>Source code</ExternalLink>
+      </p>
     </section>
   );
 }

@@ -6,15 +6,15 @@ import { useUiStore } from "@/store/uiStore";
 import { redoAndRecheck, undoAndRecheck } from "@/ui/app/historyCommands";
 import { Button } from "@/ui/primitives/Button";
 import { Dropdown } from "@/ui/primitives/Menu";
-import { CreditsDialog } from "@/ui/transport/CreditsDialog";
+import { AboutDialog } from "@/ui/transport/AboutDialog";
 import { exportProject, importProject, startNewProject } from "@/ui/transport/projectFiles";
 
-/** Menu du projet, à côté du bouton Share : historique, fichiers JSON, nouveau projet, visuels, crédits. */
+/** Menu du projet, à côté du bouton Share : historique, fichiers JSON, nouveau projet, visuels, à propos. */
 export function ProjectMenu() {
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
   const isBackgroundVisualsOn = useUiStore((state) => state.isBackgroundVisualsOn);
-  const [isCreditsOpen, setIsCreditsOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   return (
     <>
       <Dropdown
@@ -40,10 +40,10 @@ export function ProjectMenu() {
             isChecked: isBackgroundVisualsOn,
             onSelect: () => setBackgroundVisuals(!isBackgroundVisualsOn),
           },
-          { label: "Sound credits", onSelect: () => setIsCreditsOpen(true) },
+          { label: "About & credits", onSelect: () => setIsAboutOpen(true) },
         ]}
       />
-      <CreditsDialog isOpen={isCreditsOpen} onClose={() => setIsCreditsOpen(false)} />
+      <AboutDialog isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </>
   );
 }
